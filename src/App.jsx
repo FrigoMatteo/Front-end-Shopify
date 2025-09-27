@@ -2,18 +2,9 @@ import { useState,useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Routes, Route, Outlet, Link , BrowserRouter, useNavigate} from 'react-router';
-import Image from 'react-bootstrap/Image';
-
-
-
-function Header(props) {
-
-  return(
-    <>
-    <Image src="header.png/100px250" fluid />;
-    </>
-  );
-}
+import {HomeComponent} from './home';
+import {LoginForm} from './LoginForm';
+import Card from 'react-bootstrap/Card';
 
 function WrongPage(props){
 
@@ -36,8 +27,8 @@ function App() {
       <Routes>
 
       <Route path="/" element={<Layout/>}>
-        <Route index element={<loginComponent/>}/>
-        <Route path="home" element={<HomeComponent/>}/>
+        <Route index element={<LoginForm/>}/>
+        <Route path="home" element={<HomeComponent user={user}/>}/>
         <Route path="*" element={<WrongPage />} />
       </Route>
       
@@ -51,11 +42,26 @@ function App() {
 
 function Layout(props){
 
+  const cardStyle = {
+    backgroundImage: 'url("/header_pic.png")',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    border: "none",
+    width: "100%",
+    minHeight: "100vh", 
+    color: "white"
+  };
+
+
   return (
 
     <>
-    <Header/>
-    <Outlet />
+    <Card style={cardStyle}>
+      <Card.ImgOverlay>
+          <Outlet />
+      </Card.ImgOverlay>
+    </Card>
     </>
 
   )
