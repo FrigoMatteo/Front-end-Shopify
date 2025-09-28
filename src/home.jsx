@@ -10,9 +10,9 @@ function ShowFirm(props){
     <>
       
       <div>
-        <Image src="/hustle_name.png" fluid style={{ width: "70%", height: "auto" }}/>
+        <Image src="/hustle_name.png" fluid style={{ maxHeight: "30vh", width: "30vh" }} />
         <div style={{ display: "flex", justifyContent: "center"}}>
-          <p style={{ fontSize: "2rem",fontWeight: "bold", fontStyle: "italic", margin: 0}}>
+          <p style={{ fontSize: "1.5vw",fontWeight: "bold", fontStyle: "italic", margin: 0}}>
             <i className="bi bi-person"></i> Hi {props.user}
           </p>
         </div>
@@ -68,7 +68,7 @@ function ShowHistory(props){
 
   const containerStyle = {
     width: '100%',
-    height: '60vh',
+    height: '70vh',
     backgroundColor: '#E0E0E0',
     border: '4px solid gold',
     overflowY: 'auto',
@@ -90,6 +90,31 @@ function ShowHistory(props){
 }
 
 
+function ShowFormOrder(props){
+  const containerStyle = {
+    width: '100%',
+    marginTop:'3vh',
+    height: '85.5vh',
+    backgroundColor: '#E0E0E0',
+    border: '4px solid gold',
+    overflowY: 'auto',
+    padding: '10px',
+    borderRadius: '8px',
+  };
+
+  return (
+    <>
+      
+      <div style={containerStyle}>
+        Testo
+      </div>
+    
+    </>
+  );
+
+}
+
+
 
 function HomeComponent(props){
 
@@ -106,7 +131,7 @@ function HomeComponent(props){
         </Col>
 
         <Col xs={12} md={9}>
-          3
+          <ShowFormOrder/>
         </Col>
       </Row>
       
