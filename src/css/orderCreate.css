@@ -1,0 +1,71 @@
+
+.create-order {
+    background: #FEF4B1;
+    color: #39300D;
+    font-weight: bold;
+    border: 2px solid #D6AD42;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.create-order:hover {
+    background: #D6AD42;
+    color: #39300D;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+
+.product-box {
+    background: #FEF4B1;
+    color: #39300D;
+    font-weight: bold;
+    border: 2px solid #D6AD42;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.order-info {
+    flex-grow: 1;
+}
+
+.order-info div {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+.order-info i {
+    margin-right: 8px;
+    color: #39300D;
+}
+
+
+/* Custom scrollbar for history */
+.order-create::-webkit-scrollbar {
+    width: 8px;
+}
+
+.order-create::-webkit-scrollbar-track {
+    background: #39300D;
+    border-radius: 10px;
+}
+
+.order-create::-webkit-scrollbar-thumb {
+    background: #D6AD42;
+    border-radius: 10px;
+}
+
+.order-create::-webkit-scrollbar-thumb:hover {
+    background: #FEF4B1;
+}
