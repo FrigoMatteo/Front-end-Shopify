@@ -1,7 +1,7 @@
 import { useState,useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import './home.css';
+import '../css/home.css';
 import { Navbar , Container, Image, Button, Badge,InputGroup,Form, Col,Row} from 'react-bootstrap';
 import {ShowFormOrder} from './orderCreate.jsx'
 
@@ -42,7 +42,7 @@ function ShowHistory(props){
 
   console.log(orders)
   return (
-    <div className="history-container" style={{height: '64.5vh'}}>
+    <div className="history-container" style={{height: '68vh'}}>
       {orders.map(e => (
         <ShowSingleOrder key={e.node.id} order={e.node}/>
       ))}

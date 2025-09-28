@@ -11,8 +11,8 @@ function ShowFormOrder(props){
     display: "grid", 
     gridTemplateColumns: "30% 35% 35%", 
     width: '100%',
-    height: '85.5vh',
-    backgroundColor: '#fff',
+    height: '89.0vh',
+    backgroundColor: '#FEF4B1',
     border: '4px solid gold',
     overflowY: 'auto',
     borderRadius: '8px',
@@ -32,14 +32,7 @@ function ShowFormOrder(props){
             <p>Colonna 1 (30%)</p>
         </div>
         <div style={{ borderRight: "4px solid black", padding: "1rem" }}>
-            <div style={{ 
-                background: '#39300D', 
-                color: '#D6AD42', 
-                borderRadius: '10px', 
-                padding: '20px',
-                border: '2px solid #D6AD42'
-            }}>
-                <h3 style={{ color: '#FEF4B1', textAlign: 'center', marginBottom: '20px' }}>Pagamento</h3>
+                <h3 style={{ color: '#39300D', textAlign: 'center', marginBottom: '20px' }}>Pagamento</h3>
                 <div style={{
                     background: '#FEF4B1',
                     color: '#39300D',
@@ -72,7 +65,6 @@ function ShowFormOrder(props){
                         Totale: 0.0$
                     </div>
                 </div>
-            </div>
         </div>
         <div style={{ padding: "1rem" }}>
             <p>Colonna 3 (35%)</p>

@@ -2,8 +2,8 @@ import { useState,useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Routes, Route, Outlet, Link , BrowserRouter, useNavigate} from 'react-router';
-import {HomeComponent} from './home';
-import {LoginForm} from './LoginForm';
+import {HomeComponent} from './components/home';
+import {LoginForm} from './components/LoginForm';
 import Card from 'react-bootstrap/Card';
 
 function WrongPage(props){

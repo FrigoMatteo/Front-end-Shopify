@@ -3,7 +3,6 @@
 
 .home-container {
     background-color: rgba(57, 48, 13, 0.1);
-    min-height: 100vh;
 }
 
 .firm-section {
@@ -34,7 +33,7 @@
 }
 
 .single-order {
-    background: #fff;
+    background: #FEF4B1;
     color: #39300D;
     font-weight: bold;
     border: 2px solid #D6AD42;
@@ -48,7 +47,7 @@
 }
 
 .single-order:hover {
-    background: #FEF4B1;
+    background: #D6AD42;
     color: #39300D;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -111,7 +110,7 @@
 
 /* Status indicators */
 .status-open {
-    color: #D6AD42;
+    color: #8b0000;
 }
 
 .status-completed {
