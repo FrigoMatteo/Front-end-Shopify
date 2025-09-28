@@ -2,7 +2,7 @@ import { useState,useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Navbar , Container, Image, Button, Badge,InputGroup,Form, Col,Row} from 'react-bootstrap';
-
+import {ShowFormOrder} from './orderCreate.jsx'
 
 function ShowFirm(props){
 
@@ -47,7 +47,7 @@ function ShowSingleOrder(props){
               <div><i className="bi bi-basket-fill"> </i> Order : {props.order.name}</div>
               <div><i className="bi bi-person-badge"> </i>Client : {props.order.customer.displayName}</div>
               <div>
-                {props.order.status=="OPEN" ? <i class="bi bi-square"> </i> : <i class="bi bi-check-square"> </i>}
+                {props.order.status=="OPEN" ? <i className="bi bi-square"> </i> : <i className="bi bi-check-square"> </i>}
                 Status : {props.order.status}</div>
             </div>
           </div>
@@ -87,31 +87,6 @@ function ShowHistory(props){
     
     </>
   );
-}
-
-
-function ShowFormOrder(props){
-  const containerStyle = {
-    width: '100%',
-    marginTop:'3vh',
-    height: '85.5vh',
-    backgroundColor: '#E0E0E0',
-    border: '4px solid gold',
-    overflowY: 'auto',
-    padding: '10px',
-    borderRadius: '8px',
-  };
-
-  return (
-    <>
-      
-      <div style={containerStyle}>
-        Testo
-      </div>
-    
-    </>
-  );
-
 }
 
 
