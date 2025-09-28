@@ -19,7 +19,7 @@ function WrongPage(props){
 
 
 function App() {
-  const [user,setUser]=useState(undefined)
+  const [user,setUser]=useState("TestName")
 
   return (
     <>
