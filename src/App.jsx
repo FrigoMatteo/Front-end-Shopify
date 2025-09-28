@@ -50,7 +50,6 @@ function Layout(props){
     border: "none",
     width: "100%",
     minHeight: "100vh", 
-    color: "white"
   };
 
 

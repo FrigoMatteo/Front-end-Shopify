@@ -1,63 +1,37 @@
 import { useState,useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import './home.css';
 import { Navbar , Container, Image, Button, Badge,InputGroup,Form, Col,Row} from 'react-bootstrap';
 import {ShowFormOrder} from './orderCreate.jsx'
 
 function ShowFirm(props){
 
   return (
-    <>
-      
-      <div>
-        <Image src="/hustle_name.png" fluid style={{ maxHeight: "30vh", width: "30vh" }} />
-        <div style={{ display: "flex", justifyContent: "center"}}>
-          <p style={{ fontSize: "1.5vw",fontWeight: "bold", fontStyle: "italic", margin: 0}}>
-            <i className="bi bi-person"></i> Hi {props.user}
-          </p>
-        </div>
+    <div className="firm-section">
+      <Image src="/hustle_name.png" fluid style={{ maxHeight: "10vh", width: "auto" }} />
+      <div className="welcome-text">
+        <i className="bi bi-person"></i> Hi {props.user}
       </div>
-    
-    </>
+    </div>
   );
 }
 
 
 function ShowSingleOrder(props){
 
-  const containerStyle = {
-    width: 'auto',       
-    backgroundColor: '#f0f0f0',
-    color: 'black',
-    fontWeight: "bold",
-    border: '2px solid black',
-    padding: '10px',
-    margin:'5px',
-    borderRadius: '8px',
-    display: "flex",
-    justifyContent: "center",
-  };
-
   return (
-    <>
-      <Row className="align-items-stretch">
-        <Col xs={12} md={9}>
-          <div style={containerStyle}>
-            <div>
-              <div><i className="bi bi-basket-fill"> </i> Order : {props.order.name}</div>
-              <div><i className="bi bi-person-badge"> </i>Client : {props.order.customer.displayName}</div>
-              <div>
-                {props.order.status=="OPEN" ? <i className="bi bi-square"> </i> : <i className="bi bi-check-square"> </i>}
-                Status : {props.order.status}</div>
-            </div>
-          </div>
-        </Col>
-        <Col xs={6} md={3} className="d-flex justify-content-center align-items-center">
-          <i className="bi bi-trash3-fill" style={{ color:'black',fontSize: '2rem', cursor: 'pointer' }}></i>
-        </Col>
-      </Row>
-    
-    </>
+    <div className="single-order">
+      <div className="order-info">
+        <div><i className="bi bi-basket-fill"></i> Order: {props.order.name}</div>
+        <div><i className="bi bi-person-badge"></i> Client: {props.order.customer.displayName}</div>
+        <div className={props.order.status === "OPEN" ? "status-open" : "status-completed"}>
+          {props.order.status === "OPEN" ? <i className="bi bi-square"></i> : <i className="bi bi-check-square"></i>}
+          Status: {props.order.status}
+        </div>
+      </div>
+      <i className="bi bi-trash3-fill delete-icon"></i>
+    </div>
   );
 
 }
@@ -66,26 +40,13 @@ function ShowHistory(props){
 
   const [orders,setOrders]=useState(historyItems.draftOrders.edges)
 
-  const containerStyle = {
-    width: '100%',
-    height: '70vh',
-    backgroundColor: '#E0E0E0',
-    border: '4px solid gold',
-    overflowY: 'auto',
-    padding: '10px',
-    borderRadius: '8px',
-  };
   console.log(orders)
   return (
-    <>
-      
-      <div style={containerStyle}>
-        {orders.map(e => (
-          <ShowSingleOrder key={e.node.id} order={e.node}/>
-        ))}
-      </div>
-    
-    </>
+    <div className="history-container" style={{height: '64.5vh'}}>
+      {orders.map(e => (
+        <ShowSingleOrder key={e.node.id} order={e.node}/>
+      ))}
+    </div>
   );
 }
 
@@ -94,23 +55,26 @@ function ShowHistory(props){
 function HomeComponent(props){
 
   return (
-    <Container fluid>
-      <Row>
-        <Col xs={6} md={3}>
+    <div className="home-container">
+      <Container fluid>
         <Row>
-          <ShowFirm user={props.user}/>
-        </Row>
-        <Row>
-          <ShowHistory/>
-        </Row>
-        </Col>
+          <Col xs={6} md={3}>
+            <Row>
+              <ShowFirm user={props.user}/>
+            </Row>
+            <Row>
+              <ShowHistory/>
+            </Row>
+          </Col>
 
-        <Col xs={12} md={9}>
-          <ShowFormOrder/>
-        </Col>
-      </Row>
-      
-    </Container>
+          <Col xs={12} md={9}>
+            <div className="form-section">
+              <ShowFormOrder/>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 }
 

@@ -2,11 +2,16 @@ body {
     font-family: 'Poppins', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    justify-content: center;
-    align-items: center;
+    margin: 0;
+    padding: 0;
 }
 
+/* Center the wrapper specifically */
 .wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background: #39300D;
     width: 420px;
     color: #D6AD42;

@@ -34,33 +34,34 @@ export const LoginForm = () => {
       return;
     }
 
-    try {
-      const res = await sendPost(username, password);
-      console.log(res)
+    navigate('/home')
+    // try {
+    //   const res = await sendPost(username, password);
+    //   console.log(res)
 
-      if (res.username) {
-        // if your backend sends a JWT token
-        navigate('/home')
-      } else {
-        setError("Invalid credentials.");
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      setError("Something went wrong. Try again.");
-    }
+    //   if (res.username) {
+    //     // if your backend sends a JWT token
+    //     navigate('/home')
+    //   } else {
+    //     setError("Invalid credentials.");
+    //   }
+    // } catch (err) {
+    //   console.error("Login error:", err);
+    //   setError("Something went wrong. Try again.");
+    // }
   };
 
   return (
     <div className="wrapper">
       <form onSubmit={handleSubmit}>
-        <h1>Login</h1>
+        <img src="/hustle_name.png" alt="Company Logo" style={{display: 'block', margin: '0 auto 20px auto', maxWidth: '300px', height: 'auto'}} />
         {error && <p style={{ color: "red" }}>{error}</p>}
         <div className="input-box">
           <input type="text" placeholder="username" required value={username} onChange={(e) => setUsername(e.target.value)} />
           <FaUser className="icon" />
         </div>
         <div className="input-box">
-          <input type="text" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
           <FaLock className="icon" />
         </div>
 
