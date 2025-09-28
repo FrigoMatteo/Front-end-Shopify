@@ -1,5 +1,7 @@
 import React from 'react'
 import './LoginForm.css'
+import { useState,useEffect } from 'react'
+import { useNavigate} from 'react-router';
 import { FaUser } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
 import { sendPost } from './api/posts';
@@ -9,6 +11,7 @@ export const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate=useNavigate()
 
   // Regex: only letters, numbers, and . , _ ! ?
   const validPattern = /^[a-zA-Z0-9.,_!?]+$/;
@@ -33,12 +36,11 @@ export const LoginForm = () => {
 
     try {
       const res = await sendPost(username, password);
+      console.log(res)
 
-      if (res.token) {
+      if (res.username) {
         // if your backend sends a JWT token
-        localStorage.setItem("token", res.token);
-        alert("Login successful!");
-        // TODO: redirect to /orders
+        navigate('/home')
       } else {
         setError("Invalid credentials.");
       }

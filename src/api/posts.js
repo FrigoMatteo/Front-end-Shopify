@@ -1,5 +1,5 @@
 const sendPost=async (username, password)=>{
-    const response=await fetch('http://localhost:3001/api/post/add', {
+    const response=await fetch('http://localhost:4321/api/session/login', {
             method: "POST",
             credentials:'include',
             headers: {
@@ -18,3 +18,5 @@ const sendPost=async (username, password)=>{
     return res;
 
 }
+
+export {sendPost};
