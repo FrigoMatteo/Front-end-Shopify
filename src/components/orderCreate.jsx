@@ -1,7 +1,7 @@
 import { useState,useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { Navbar , Container, Image, Button, Badge,InputGroup,Form, Col,Row} from 'react-bootstrap';
+import { Alert,Navbar , Container, Image, Button, Badge,InputGroup,Form, Col,Row} from 'react-bootstrap';
 import '../css/orderCreate.css';
 
 
@@ -50,34 +50,127 @@ function SummaryCosts(props){
 
 
 function SingleProduct(props){
-
   return (
-  
-    <div className="create-order">
-      <div className="order-info">
-        <div>{props.prod.title ? props.prod.title : "Undefined"}</div>
-        <div>{props.prod.variants.nodes[0].price ? props.prod.variants.nodes[0].price : "Undefined"} € &nbsp;
-          {props.prod.status=="ACTIVE" ? <i className="bi bi-circle-fill" style={{ color: "#28a745" }}></i> :<i className="bi bi-circle-fill" style={{color:"#8b0000"}}></i>}</div>
+    <div
+      className="create-order product-card"
+      style={{ cursor: "pointer", background: props.targetSelect ? "#D6AD42" : "" }}
+      onClick={() => props.selectProdList(props.prod.id)}
+    >
+      <div className="order-info product-card-inner" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+
+        <Image
+          src="https://cdn.shopify.com/s/files/1/0947/5866/6563/files/Copia_di_hustle_community_1280_x_720_px_Post_Instagram_13.png?v=1759160207"
+          alt="Product"
+          rounded
+          style={{ width: '40px', height: '40px', objectFit: 'cover', marginRight: '10px' }}
+        />
+        
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+          <div className="product-title">{props.prod.title || "Undefined"}</div>
+          <div className="product-price">
+            {props.prod.variants.nodes[0].price || "Undefined"} € &nbsp;
+            {props.prod.status === "ACTIVE" 
+              ? <i className="bi bi-circle-fill" style={{ color: "#28a745" }}></i>
+              : <i className="bi bi-circle-fill" style={{ color: "#8b0000" }}></i>}
+            <div>
+              {/*props.prod.variants.nodes[0].inventoryQuantity>=0 ? "Quantità:"+props.prod.variants.nodes[0].inventoryQuantity : ""*/}
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-
   );
 }
 
 function RequestProduct(props){
 
-  const [products,setProducts]=useState(productslist.products.nodes);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [products,setProducts]=useState(props.productList);
   const [searchProduct,setSearchProduct]=useState("");
 
-  const [value, setValue] = useState(1); // valore iniziale
+  const [selectProd, setSelectProd]=useState("");
 
-  const handleChangeQuantity = (e) => {
-    setValue(e.target.value);
+  const [valueProd, setValueProd] = useState(1);
+
+  const [valuePersonalized, setValuePersonalized] = useState(1);
+  const [namePersonalized, setNamePersonalized] = useState("");
+  const [pricePersonalized, setPricePersonalized] = useState("");
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch();
+    }
   };
 
-  const handleSubmit = (e) => {
+
+  const handleSearch = () => {
+    let risultati=[]
+    if (searchProduct==""){
+      risultati=props.productList
+    }else{
+      risultati = products.filter(item =>
+        item.title.toLowerCase().includes(searchProduct.toLowerCase())
+      );
+    }
+    
+    setProducts(risultati)
+  }
+
+  const selectProdList=(id)=>{
+
+    if (id==selectProd){
+      setSelectProd("")
+    }else{
+      setSelectProd(id)
+    }
+
+  }
+
+
+  const handleSubmitProd = (e) => {
     e.preventDefault();
-    alert(`Quantità inviata: ${value}`);
+
+    const product = props.productList.find(p => p.id === selectProd);
+    
+    if (valueProd<=product.variants.nodes[0].inventoryQuantity ){
+      props.addProduct(
+        {
+          id:product.variants.nodes[0].id ? product.variants.nodes[0].id : "Undefined",
+          title:product.title ? product.title : "Undefined",
+          price: product.variants.nodes[0].price 
+            ? (parseFloat(product.variants.nodes[0].price) * valueProd).toFixed(2).toString() 
+            : "Undefined",
+          quantity:valueProd
+        })
+      
+      setValueProd(1)
+      setSelectProd("")
+      setSearchProduct("")
+    }else{
+      setErrorMessage("Quantità non consentita")
+    }
+
+  };
+
+  const handleSubmitPersonalized = (e) => {
+    e.preventDefault();
+
+    props.addProduct(
+      {
+        id:"Personalized",
+        title:namePersonalized ? namePersonalized : "Undefined",
+        price: pricePersonalized 
+          ? (pricePersonalized * valuePersonalized).toFixed(2).toString() 
+          : "Undefined",
+        quantity:valuePersonalized
+      })
+    
+    setValuePersonalized(1)
+    setNamePersonalized("")
+    setPricePersonalized("")
+
   };
 
   return(
@@ -85,42 +178,45 @@ function RequestProduct(props){
     <div className="product-box">
       <div className='order-info'>
         <InputGroup style={{marginBottom:'10px'}}>
-          <InputGroup.Text style={{background: '#D6AD42'}}><i className="bi bi-search"></i></InputGroup.Text>
-          <Form.Control type="text" placeholder="Cerca prodotto" value={searchProduct} onChange={ev => setSearchProduct(ev.target.value)}/>
+          <InputGroup.Text onClick={handleSearch} style={{background: '#D6AD42', cursor: "pointer"}} ><i className="bi bi-search"></i></InputGroup.Text>
+          <Form.Control type="text" placeholder="Cerca prodotto" onKeyDown={handleKeyDown} value={searchProduct} onChange={ev => setSearchProduct(ev.target.value) }/>
         </InputGroup>
-        <Form onSubmit={handleSubmit}>
+        {errorMessage ? <Alert variant='danger' dismissible onClick={()=>setErrorMessage('')}>{errorMessage}</Alert> : ''}
+        <Form onSubmit={handleSubmitProd} onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+            }
+          }}>
           <div className="d-flex justify-content-between align-items-center">
-            {/* Label + input a sinistra */}
+
             <div className="d-flex align-items-center">
-              <Form.Label className="me-2 mb-0">Quantità:</Form.Label>
+              <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'60%'}}>Quantità:</Form.Label>
               <Form.Control
                 type="number"
-                value={value}
-                onChange={handleChangeQuantity}
+                value={valueProd}
+                onChange={(e)=>{setValueProd(parseInt(e.target.value) || 1)}}
                 min={1}
                 max={100}
                 step={1}
-                style={{ width: "80px", textAlign: "center" }}
+                style={{ width: "4vw", height:'4vh',textAlign: "center" }}
               />
             </div>
 
-            {/* Bottone allineato a destra */}
             <Button type="submit" style={{ 
+                  width:'50%',
                   fontWeight: 'bold', 
                   color: '#39300D',
                   textAlign: 'center',
                   background: '#D6AD42',
                   borderRadius: '5px',
-                  borderColor:'#D6AD42'
+                  borderColor:'#D6AD42',
+                  fontSize: "0.8vw"
               }}>
               Aggiungi al carello
             </Button>
           </div>
         </Form>
-      </div>
-    </div>
-
-    <div className='order-create' style={{
+              <div className='order-create' style={{
               background: '#39300D',
               color: '#39300D',
               borderRadius: '8px',
@@ -129,11 +225,71 @@ function RequestProduct(props){
               height: '40vh',
               overflowY: 'auto',
           }}>
-        
-        {products.map(e => (<SingleProduct key={e.id} prod={e}/> ))}
 
+            {products.map(e => (<SingleProduct key={e.id} targetSelect={selectProd==e.id ? true : false} prod={e} selectProdList={selectProdList} /> ))}
+
+        </div>
+      </div>
     </div>
     
+    <div className="product-box" style={{height:'27vh'}}>
+      <div className='order-info'>
+        <div style={{ color: '#39300D', fontSize: "1.1vw",fontWeight:'bold'}}>Crea Articolo Personalizzato</div>
+        <Form onSubmit={handleSubmitPersonalized}>
+          <Form.Group className="d-flex align-items-center" style={{ height: "5vh", textAlign: "center" }}>
+            <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw"}}>Articolo</Form.Label>
+            <Form.Control style={{fontSize: "0.8vw"}}
+              type="text"
+              placeholder="Inserisci il nome dell'articolo"
+              value={namePersonalized}
+              onChange={(e)=>{setNamePersonalized(e.target.value)}}
+              required
+            />
+          </Form.Group>
+          <div className="d-flex justify-content-between align-items-center">
+          <Form.Group className="d-flex align-items-center">
+            <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw"}}>Prezzo</Form.Label>
+            <InputGroup style={{ width: "6vw", height: "4vh", textAlign: "center" }}>
+              <InputGroup.Text>€</InputGroup.Text>
+              <Form.Control type="number" required className="no-spinners"
+                value={pricePersonalized}                  // <-- bind allo stato
+                onChange={(e) => setPricePersonalized(parseFloat(e.target.value) || 0)} // <-- converte in numero
+              />
+            </InputGroup>
+          </Form.Group>
+          <div className="d-flex align-items-center">
+              <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'60%'}}>Quantità:</Form.Label>
+              <Form.Control
+                type="number"
+                value={valuePersonalized}
+                onChange={(e)=>{setValuePersonalized(parseInt(e.target.value) || 1)}}
+                min={1}
+                max={100}
+                step={1}
+                style={{ width: "4vw", height:'4vh',textAlign: "center" }}
+              />
+            </div>
+          </div>
+          <div className="d-flex justify-content-end">
+            <Button
+              type="submit"
+              style={{
+                width: "50%",
+                fontWeight: "bold",
+                color: "#39300D",
+                textAlign: "center",
+                background: "#D6AD42",
+                borderRadius: "5px",
+                borderColor: "#D6AD42",
+                fontSize: "0.8vw",
+              }}
+            >
+              Aggiungi al carrello
+            </Button>
+          </div>
+        </Form>
+      </div>
+    </div>
     </>
   );
 
@@ -142,6 +298,18 @@ function RequestProduct(props){
 
 
 function ShowFormOrder(props){
+
+  const [summaryProd,setSummaryProd]=useState([])
+  const [productList,setProductList]=useState(productslist.products.nodes)
+
+  const addProduct = (prod) => {
+    setSummaryProd(prev => [...prev, prod]); 
+  };
+  
+  useEffect(() => {
+    console.log("Prodotti nel carrello:", summaryProd);
+  }, [summaryProd]);
+
   const containerStyle = {
     display: "grid", 
     gridTemplateColumns: "35% 30% 35%", 
@@ -156,13 +324,13 @@ function ShowFormOrder(props){
   return (
     <>
       
-      <div style={containerStyle}>
+      <div style={containerStyle} className='order-create'>
         <div style={{ borderRight: "4px solid black", padding: "1rem" }}>
-          <RequestProduct/>
+          <RequestProduct addProduct={addProduct} productList={productList}/>
         </div>
           <SummaryCosts/>
         <div style={{ padding: "1rem" }}>
-            <p>Colonna 3 (35%)</p>
+          <p>Colonna 3 (35%)</p>
         </div>
       </div>
       
@@ -173,7 +341,7 @@ function ShowFormOrder(props){
 }
 
 
-const productslist={
+const productslist = {
   "products": {
     "nodes": [
       {
@@ -183,8 +351,17 @@ const productslist={
         "variants": {
           "nodes": [
             {
+              "id": "gid://shopify/ProductVariant/11-1",
               "inventoryQuantity": 30,
               "price": "22.99"
+            }
+          ]
+        },
+        "images": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductImage/11-1",
+              "originalSrc": "https://cdn.shopify.com/s/files/1/0947/5866/6563/files/Copia_di_hustle_community_1280_x_720_px_Post_Instagram_13.png?v=1759160207"
             }
           ]
         }
@@ -196,8 +373,17 @@ const productslist={
         "variants": {
           "nodes": [
             {
-              "inventoryQuantity": 14,
+              "id": "gid://shopify/ProductVariant/12-1",
+              "inventoryQuantity": 0,
               "price": "44.99"
+            }
+          ]
+        },
+        "images": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductImage/12-1",
+              "originalSrc": "https://example.com/images/product12.jpg"
             }
           ]
         }
@@ -209,8 +395,17 @@ const productslist={
         "variants": {
           "nodes": [
             {
-              "inventoryQuantity": 20,
+              "id": "gid://shopify/ProductVariant/13-1",
+              "inventoryQuantity": -1,
               "price": "32.99"
+            }
+          ]
+        },
+        "images": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductImage/13-1",
+              "originalSrc": "https://example.com/images/product13.jpg"
             }
           ]
         }
@@ -222,8 +417,17 @@ const productslist={
         "variants": {
           "nodes": [
             {
+              "id": "gid://shopify/ProductVariant/14-1",
               "inventoryQuantity": 9,
               "price": "59.99"
+            }
+          ]
+        },
+        "images": {
+          "nodes": [
+            {
+              "id": "gid://shopify/ProductImage/14-1",
+              "originalSrc": "https://example.com/images/product14.jpg"
             }
           ]
         }
@@ -235,210 +439,26 @@ const productslist={
         "variants": {
           "nodes": [
             {
+              "id": "gid://shopify/ProductVariant/15-1",
               "inventoryQuantity": 25,
               "price": "17.99"
             }
           ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/16",
-        "title": "Occhiali da Vista",
-        "status": "ACTIVE",
-        "variants": {
+        },
+        "images": {
           "nodes": [
             {
-              "inventoryQuantity": 6,
-              "price": "39.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/17",
-        "title": "Borsa Tracolla",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 11,
-              "price": "49.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/18",
-        "title": "Giacca a Vento",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 8,
-              "price": "64.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/19",
-        "title": "Cintura Sportiva",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 19,
-              "price": "21.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/20",
-        "title": "Orologio Elegante",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 4,
-              "price": "129.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/1",
-        "title": "T-Shirt Basic",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 25,
-              "price": "19.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/2",
-        "title": "Jeans Slim Fit",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 10,
-              "price": "49.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/3",
-        "title": "Felpa con Cappuccio",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 15,
-              "price": "34.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/4",
-        "title": "Sneakers Running",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 5,
-              "price": "69.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/5",
-        "title": "Cappello Baseball",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 20,
-              "price": "14.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/6",
-        "title": "Occhiali da Sole",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 8,
-              "price": "29.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/7",
-        "title": "Zaino Casual",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 12,
-              "price": "39.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/8",
-        "title": "Giacca Leggera",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 7,
-              "price": "59.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/9",
-        "title": "Cintura in Pelle",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 18,
-              "price": "24.99"
-            }
-          ]
-        }
-      },
-      {
-        "id": "gid://shopify/Product/10",
-        "title": "Orologio Sportivo",
-        "status": "ACTIVE",
-        "variants": {
-          "nodes": [
-            {
-              "inventoryQuantity": 3,
-              "price": "99.99"
+              "id": "gid://shopify/ProductImage/15-1",
+              "originalSrc": "https://example.com/images/product15.jpg"
             }
           ]
         }
       }
     ]
   }
-}
+};
+
+
 
 
 export {ShowFormOrder};

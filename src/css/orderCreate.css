@@ -1,17 +1,4 @@
 
-.create-order {
-    background: #FEF4B1;
-    color: #39300D;
-    font-weight: bold;
-    border: 2px solid #D6AD42;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.3s ease;
-}
 
 .create-order:hover {
     background: #D6AD42;
@@ -26,7 +13,7 @@
     color: #39300D;
     font-weight: bold;
     border: 2px solid #D6AD42;
-    padding: 15px;
+    padding: 10px;
     margin: 10px 0;
     border-radius: 8px;
     display: flex;
@@ -35,14 +22,36 @@
     transition: all 0.3s ease;
 }
 
-.order-info {
-    flex-grow: 1;
+.create-order.product-card .order-info {
+  display: block;        /* permetti ai child di comportarsi come blocchi */
+  min-width: 0;          /* evita overflow x nei flex-parent */
 }
 
-.order-info div {
-    margin: 5px 0;
-    display: flex;
-    align-items: center;
+/* titolo e prezzo: forziamo il comportamento a blocco e permettiamo il wrapping */
+.product-title,
+.product-price {
+  display: block;
+  width: 100%;
+  white-space: normal;             /* consente l'andare a capo */
+  overflow-wrap: anywhere;         /* forza il wrapping anche su parole lunghe */
+  word-break: break-word;
+}
+
+
+.create-order.product-card {
+  background: #FEF4B1;
+  color: #39300D;
+  font-weight: bold;
+  border: 2px solid #D6AD42;
+  padding: 10px;
+  margin: 10px 0 !important;
+  border-radius: 8px;
+
+  display: flex;
+  flex-direction: column;   /* <-- importante: impila gli elementi verticalmente */
+  justify-content: flex-start;
+  align-items: stretch;
+  transition: all 0.3s ease;
 }
 
 .order-info i {
@@ -50,6 +59,16 @@
     color: #39300D;
 }
 
+.order-info div {
+  display: flex;
+  align-items: center;
+}
+
+/* correzione: non applicare flex a order-create */
+.order-info .order-create {
+  display: block;
+  margin: 0;
+}
 
 /* Custom scrollbar for history */
 .order-create::-webkit-scrollbar {
@@ -68,4 +87,17 @@
 
 .order-create::-webkit-scrollbar-thumb:hover {
     background: #FEF4B1;
+}
+
+
+/* Rimuove le frecce in Chrome, Safari, Edge */
+.no-spinners::-webkit-inner-spin-button,
+.no-spinners::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Rimuove le frecce in Firefox */
+.no-spinners[type=number] {
+  -moz-appearance: textfield;
 }
