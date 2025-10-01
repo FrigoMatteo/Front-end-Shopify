@@ -1,20 +1,43 @@
 import React from 'react'
 import "../css/LoginForm.css"
+import { Spinner } from 'react-bootstrap';
 import { useState,useEffect } from 'react'
 import { useNavigate} from 'react-router';
 import { FaUser } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
 import { sendPost } from '../api/posts';
+import { getSessionAPI } from '../api/posts';
 
-export const LoginForm = () => {
+
+export const LoginForm = (props) => {
   // State for form inputs
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState(false);
   const [error, setError] = useState("");
   const navigate=useNavigate()
 
   // Regex: only letters, numbers, and . , _ ! ?
   const validPattern = /^[a-zA-Z0-9.,_!?]+$/;
+
+
+
+  useEffect(()=>{
+    // Used to set any possible account previously logged in
+    
+    const getSes=async ()=>{
+      const user=await getSessionAPI()
+      console.log("login user:",user)
+      if (user?.error){
+        props.setUser("undefined")
+      }else{
+        props.setUser(user.username)
+        navigate('/home')
+      }
+    }
+
+    getSes()
+  },[])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,21 +57,25 @@ export const LoginForm = () => {
       return;
     }
 
-    navigate('/home')
-    // try {
-    //   const res = await sendPost(username, password);
-    //   console.log(res)
 
-    //   if (res.username) {
-    //     // if your backend sends a JWT token
-    //     navigate('/home')
-    //   } else {
-    //     setError("Invalid credentials.");
-    //   }
-    // } catch (err) {
-    //   console.error("Login error:", err);
-    //   setError("Something went wrong. Try again.");
-    // }
+    try {
+      setConfirm(true)
+      const res = await sendPost(username, password);
+
+      if (res.username) {
+        // if your backend sends a JWT token
+        navigate('/home')
+      } else {
+        setConfirm(false)
+        setPassword("")
+        setUsername("")
+        setError("Invalid credentials.");
+      }
+    } catch (err) {
+      setConfirm(false)
+      console.error("Login error:", err);
+      setError("Something went wrong. Try again.");
+    }
   };
 
   return (
@@ -65,7 +92,14 @@ export const LoginForm = () => {
           <FaLock className="icon" />
         </div>
 
-        <button type="submit">Login</button>
+        {!confirm ? <button type="submit">Login</button> :
+          <button type="submit" disabled>
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </button>
+          
+        }
       </form>
     </div>
   )

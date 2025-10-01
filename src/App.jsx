@@ -19,7 +19,7 @@ function WrongPage(props){
 
 
 function App() {
-  const [user,setUser]=useState("TestName")
+  const [user,setUser]=useState("")
 
   return (
     <>
@@ -27,8 +27,8 @@ function App() {
       <Routes>
 
       <Route path="/" element={<Layout/>}>
-        <Route index element={<LoginForm/>}/>
-        <Route path="home" element={<HomeComponent user={user}/>}/>
+        <Route index element={<LoginForm setUser={setUser}/>}/>
+        <Route path="home" element={<HomeComponent setUser={setUser} user={user}/>}/>
         <Route path="*" element={<WrongPage />} />
       </Route>
       
@@ -51,7 +51,6 @@ function Layout(props){
     width: "100%",
     minHeight: "100vh", 
   };
-
 
   return (
 
