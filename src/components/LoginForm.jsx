@@ -57,25 +57,24 @@ export const LoginForm = (props) => {
       return;
     }
 
-    navigate('/home')
-    // try {
-    //   setConfirm(true)
-    //   const res = await sendPost(username, password);
+    try {
+      setConfirm(true)
+      const res = await sendPost(username, password);
 
-    //   if (res.username) {
-    //     // if your backend sends a JWT token
-    //     navigate('/home')
-    //   } else {
-    //     setConfirm(false)
-    //     setPassword("")
-    //     setUsername("")
-    //     setError("Invalid credentials.");
-    //   }
-    // } catch (err) {
-    //   setConfirm(false)
-    //   console.error("Login error:", err);
-    //   setError("Something went wrong. Try again.");
-    // }
+      if (res.username) {
+        props.setUser(res.username)
+        navigate('/home')
+      } else {
+        setConfirm(false)
+        setPassword("")
+        setUsername("")
+        setError("Invalid credentials.");
+      }
+    } catch (err) {
+      setConfirm(false)
+      console.error("Login error:", err);
+      setError("Something went wrong. Try again.");
+    }
   };
 
   return (

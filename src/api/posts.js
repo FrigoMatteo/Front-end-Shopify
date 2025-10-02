@@ -1,5 +1,5 @@
 const sendPost=async (username, password)=>{
-    const response=await fetch('http://localhost:10000/api/session/login', {
+    const response=await fetch('https://backendshopifyhustleproduction.onrender.com/api/session/login', {
             method: "POST",
             credentials:'include',
             headers: {
@@ -23,9 +23,12 @@ const sendPost=async (username, password)=>{
 // Get products
 const getProducts=async ()=>{
 
-    const response=await fetch('http://localhost:10000/api/products',{
+    const response=await fetch('https://backendshopifyhustleproduction.onrender.com/api/products',{
         method: "GET",
-        credentials:'include'
+        credentials:'include',
+        headers: {
+            "Content-type": "application/json",
+        },
     });
     const products=await response.json()
 
@@ -37,9 +40,12 @@ const getProducts=async ()=>{
 // Get orders
 const getOrders=async ()=>{
 
-    const response=await fetch('http://localhost:10000/api/orders',{
+    const response=await fetch('https://backendshopifyhustleproduction.onrender.com/api/orders',{
         method: "GET",
-        credentials:'include'
+        credentials:'include',
+        headers: {
+            "Content-type": "application/json",
+        },
     });
     const orders=await response.json()
 
@@ -53,7 +59,7 @@ const getOrders=async ()=>{
 // Get user Sessions:
 const getSessionAPI=async ()=>{
 
-    const response=await fetch('http://localhost:10000/api/session/current',{
+    const response=await fetch('https://backendshopifyhustleproduction.onrender.com/api/session/current',{
         method: "GET",
         credentials: 'include',
     });
@@ -68,7 +74,7 @@ const getSessionAPI=async ()=>{
 // Logout fetch
 const logoutSession=async ()=>{
 
-    const response=await fetch('http://localhost:10000/api/session/logout',{
+    const response=await fetch('https://backendshopifyhustleproduction.onrender.com/api/session/logout',{
         method: "DELETE",
         credentials: 'include',
     });
