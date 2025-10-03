@@ -101,7 +101,7 @@ const logoutSession=async ()=>{
 
 }
 
-export {sendPost,getProducts,getOrders,getSessionAPI,logoutSession};
+export {sendPost,getProducts,getOrders,getSessionAPI,logoutSession,getClients};
 
 /*
 const sendPost=async (username, password)=>{
