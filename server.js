@@ -17,7 +17,7 @@ app.get("/*", (req, res) => {
   });
 });
 
-const port = process.env.PORT || 10000;
+const port = process.env.PORT || 10001;
 app.listen(port, () => {
   console.log(`✅ App avviata su http://localhost:${port}`);
 });

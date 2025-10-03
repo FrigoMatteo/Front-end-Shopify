@@ -7,6 +7,7 @@ import {ShowFormOrder} from './orderCreate.jsx'
 import { getOrders } from '../api/posts';
 import { useNavigate} from 'react-router';
 import { getSessionAPI,logoutSession } from '../api/posts';
+import dayjs from 'dayjs';
 
 
 
@@ -62,13 +63,13 @@ function ShowSingleOrder(props){
     <div className="single-order">
       <div className="order-info">
         <div><i className="bi bi-basket-fill"></i> Order: {props.order.name}</div>
-        <div><i className="bi bi-person-badge"></i> Client: {/*props.order.customer.displayName*/}</div>
+        <div><i className="bi bi-person-badge"></i> Client: {props.order.customer ? props.order.customer.displayName : "Non definito"}</div>
         <div className={props.order.status === "OPEN" ? "status-open" : "status-completed"}>
           {props.order.status === "OPEN" ? <i className="bi bi-square"></i> : <i className="bi bi-check-square"></i>}
           Status: {props.order.status}
         </div>
       </div>
-      <i className="bi bi-trash3-fill delete-icon"></i>
+      {props.order.createdAt ? dayjs(props.order.createdAt).format('DD/MM/YYYY  HH:mm') : "Non definito"}
     </div>
   );
 
