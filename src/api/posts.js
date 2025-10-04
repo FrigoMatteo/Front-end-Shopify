@@ -125,6 +125,27 @@ const sendPost=async (username, password)=>{
 
 }
 
+// Create client
+const postClient=async (customer)=>{
+    const response=await fetch('http://localhost:10000/api/create/client', {
+            method: "POST",
+            credentials:'include',
+            headers: {
+            "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+                customer:customer,
+            })
+        }
+    )
+
+    const res=await response.json()
+
+    //console.log("Post inserted:", res)
+    return res;
+
+}
+
 
 // Get products
 const getProducts=async ()=>{
@@ -207,4 +228,4 @@ const logoutSession=async ()=>{
 
 }
 
-export {sendPost,getProducts,getOrders,getSessionAPI,logoutSession, getClients};
+export {sendPost,getProducts,getOrders,getSessionAPI,logoutSession, getClients,postClient};

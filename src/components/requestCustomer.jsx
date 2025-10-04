@@ -2,7 +2,8 @@ import { useState,useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Alert,Navbar , Container, Image, Button, Badge,InputGroup,Form, Col,Row} from 'react-bootstrap';
-
+import {postClient} from '../api/posts';
+import { GrUpdate } from 'react-icons/gr';
 
 
 
@@ -37,7 +38,6 @@ function RequestCustomer(props){
   };
 
   useEffect(() => {
-    // Initialize with mock customers data
     setCustomers(props.customerList);
   }, [props.customerList]);
 
@@ -48,8 +48,8 @@ function RequestCustomer(props){
       risultati = props.customerList;
     } else {
       risultati = props.customerList.filter(item =>
-        item.displayName.toLowerCase().includes(searchCustomer.toLowerCase()) ||
-        item.defaultEmailAddress.emailAddress.toLowerCase().includes(searchCustomer.toLowerCase())
+        item.displayName?.toLowerCase().includes(searchCustomer.toLowerCase()) ||
+        item.defaultEmailAddress?.emailAddress?.toLowerCase().includes(searchCustomer.toLowerCase())
       );
     }
     setCustomers(risultati);
@@ -66,44 +66,31 @@ function RequestCustomer(props){
       const found = customers.find(c => c.id === id) || (props.customerList || []).find(c => c.id === id);
       if (found) {
         // normalize to include all useful fields so SummaryCosts can show full info
-        const phonePrefix = found.phonePrefix || found.phone_prefix || "";
-        const phoneNumber = found.phone || found.phoneNumber || (found.defaultPhone && found.defaultPhone.number) || "";
-        const fullPhone = phonePrefix ? `${phonePrefix} ${phoneNumber}` : phoneNumber;
+        const fullPhone = found.defaultAddress.phone;
 
         const normalized = {
           id: found.id,
           name: found.name || found.displayName || found.firstName || "",
           surname: found.surname || found.lastName || "",
           email: (found.email) || (found.defaultEmailAddress && found.defaultEmailAddress.emailAddress) || "",
-          company: found.company || found.organization || "",
+          company: found.defaultAddress.company || found.organization || "",
           address: found.address || (found.defaultAddress && (found.defaultAddress.address1 || found.defaultAddress.formatted)) || "",
           city: found.city || (found.defaultAddress && found.defaultAddress.city) || "",
           postalCode: found.postalCode || (found.defaultAddress && found.defaultAddress.zip) || "",
           province: found.province || (found.defaultAddress && found.defaultAddress.province) || "",
-          countryCode: found.countryCode || found.country || (found.defaultAddress && found.defaultAddress.country) || "",
-          countryName: found.countryName || "",
-          phonePrefix: phonePrefix,
-          phone: phoneNumber,
-          fullPhone: fullPhone,
-          fiscalCode: found.fiscalCode || found.taxNumber || "",
+          countryCode: found.countryCode || found.country || (found.defaultAddress && found.defaultAddress.provinceCode) || "",
+          countryName: found.defaultAddress.country || "",
+          phone: fullPhone,
+          fiscalCode: found.defaultAddress.address2 || "",
           spam: typeof found.spam === 'boolean' ? found.spam : !!found.acceptsMarketing || false
         };
+        console.log(normalized)
         props.setSelectedCustomer(normalized);
       } else {
         props.setSelectedCustomer(null);
       }
     }
   }
-
-  const handleSelectCustomer = (e) => {
-    e.preventDefault();
-    const customer = customers.find(c => c.id === selectCustomer);
-    if (customer) {
-      props.setSelectedCustomer(customer);
-      setSelectCustomer("");
-      setSearchCustomer("");
-    }
-  };
 
   const handleAddNewCustomer = (e) => {
     e.preventDefault();
@@ -116,13 +103,13 @@ function RequestCustomer(props){
       return;
     }
 
+    const fullPhone = `${newCustomerPhonePrefix}${newCustomerPhone}`;
+    console.log()
     const newCustomer = {
-      id: "gid://shopify/Customer/" + Date.now(),
       name: newCustomerName,
       surname: newCustomerSurname,
       email: newCustomerEmail,
-      phonePrefix: newCustomerPhonePrefix,
-      phone: newCustomerPhone,
+      phone: fullPhone,
       fiscalCode: newCustomerFiscalCode,
       company: newCustomerCompany,
       country: newCustomerCountry,
@@ -133,19 +120,51 @@ function RequestCustomer(props){
       spam: newCustomerSpam,
     };
 
-    // Add to customers list
-    // Add customer. we need to send a post before !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    setCustomers([newCustomer, ...props.customerList]);
-    props.setCustomerList(prev => [newCustomer,...prev]);
-    selectCustomerList(newCustomer.id)
+    const addClient = async (newCustomer) => {
+      
+      const res=await postClient(newCustomer)
+      console.log("Created client:",res)
+
+      if (res?.error){
+          setErrorMessage(res.error)
+      }else{
+          props.updateClients()
+
+          setSelectCustomer(res.id);
+          const found=props.customerList.find(c => c.id === res.id);
+
+
+          const fullPhone = found.defaultAddress.phone;
+
+          const normalized = {
+            id: found.id,
+            name: found.name || found.displayName || found.firstName || "",
+            surname: found.surname || found.lastName || "",
+            email: (found.email) || (found.defaultEmailAddress && found.defaultEmailAddress.emailAddress) || "",
+            company: found.defaultAddress.company || found.organization || "",
+            address: found.address || (found.defaultAddress && (found.defaultAddress.address1 || found.defaultAddress.formatted)) || "",
+            city: found.city || (found.defaultAddress && found.defaultAddress.city) || "",
+            postalCode: found.postalCode || (found.defaultAddress && found.defaultAddress.zip) || "",
+            province: found.province || (found.defaultAddress && found.defaultAddress.province) || "",
+            countryCode: found.countryCode || found.country || (found.defaultAddress && found.defaultAddress.provinceCode) || "",
+            countryName: found.defaultAddress.country || "",
+            phone: fullPhone,
+            fiscalCode: found.defaultAddress.address2 || "",
+            spam: typeof found.spam === 'boolean' ? found.spam : !!found.acceptsMarketing || false
+          };
+
+          props.setSelectedCustomer(normalized);
+      }
+
+    };
+
+    addClient(newCustomer)
+
 
     // Ho cambiato che elimina quello che magari c'era scritto nella ricerca del cliente
     // E ricarica la ricerca in modo tale da mostrare tutti
     setSearchCustomer("")
     //handleSearch()
-    
-    // Set as selected customer
-    props.setSelectedCustomer(newCustomer);
     
     // Reset form
     setNewCustomerName("");
@@ -168,7 +187,12 @@ function RequestCustomer(props){
     <>
     <div className="product-box">
       <div className='order-info'>
+        {errorMessage ? <Alert variant='danger' dismissible onClick={()=>setErrorMessage('')}>{errorMessage}</Alert> : ''}
         <div style={{ color: '#39300D', fontSize: "1.1vw", fontWeight:'bold', marginBottom: '10px' }}>Seleziona Cliente</div>
+        <InputGroup style={{marginBottom:'10px'}}>
+          <InputGroup.Text onClick={handleSearch} style={{background: '#D6AD42', cursor: "pointer"}} ><i className="bi bi-search"></i></InputGroup.Text>
+          <Form.Control type="text" placeholder="Cerca cliente" onKeyDown={handleKeyDown} value={searchCustomer} onChange={ev => setSearchCustomer(ev.target.value) }/>
+        </InputGroup>
         
         <div className='order-create' style={{
             background: '#39300D',
@@ -249,7 +273,8 @@ function RequestCustomer(props){
               type="text"
               placeholder="RSSMRA80A01H501U"
               value={newCustomerFiscalCode}
-              onChange={(e) => setNewCustomerFiscalCode(e.target.value)}
+              onChange={(e) => setNewCustomerFiscalCode(e.target.value.toUpperCase())}
+              required
             />
           </Form.Group>
 
@@ -257,30 +282,22 @@ function RequestCustomer(props){
             <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Azienda:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
               type="text"
-              placeholder=""
+              placeholder="Company srl"
               value={newCustomerCompany}
               onChange={(e) => setNewCustomerCompany(e.target.value)}
-              required
             />
           </Form.Group>
 
           <Form.Group className="mb-2 d-flex align-items-center">
             <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Paese:</Form.Label>
-            <Form.Select
+            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
+              type="text"
               value={newCustomerCountry}
               onChange={(e) => setNewCustomerCountry(e.target.value)}
-              aria-label="Seleziona Paese"
-              style={{ fontSize: '0.8vw', flex: '1' }}
+              placeholder="IT"
               required
             >
-              <option value="">Seleziona Paese</option>
-              <option value="IT">Italy (+39)</option>
-              <option value="US">United States (+1)</option>
-              <option value="GB">United Kingdom (+44)</option>
-              <option value="FR">France (+33)</option>
-              <option value="DE">Germany (+49)</option>
-              <option value="ES">Spain (+34)</option>
-            </Form.Select>
+            </Form.Control>
           </Form.Group>
           
           <Form.Group className="mb-2 d-flex align-items-center">
@@ -326,20 +343,14 @@ function RequestCustomer(props){
           <Form.Group className="mb-2 d-flex align-items-center">
             <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Telefono:</Form.Label>
             <div style={{ display: 'flex', flex: 1, gap: '8px', alignItems: 'center' }}>
-              <Form.Select
+              <Form.Control style={{fontSize: "0.8vw", flex: "1", maxWidth: "70px"}}
+                type="text"
                 value={newCustomerPhonePrefix}
                 onChange={(e) => setNewCustomerPhonePrefix(e.target.value)}
-                aria-label="Prefisso internazionale"
-                style={{ width: '110px', fontSize: '0.8vw' }}
+                placeholder="+39"
               >
-                <option value="">Prefisso</option>
-                <option value="+39">+39 (IT)</option>
-                <option value="+1">+1 (US)</option>
-                <option value="+44">+44 (UK)</option>
-                <option value="+33">+33 (FR)</option>
-                <option value="+49">+49 (DE)</option>
-                <option value="+34">+34 (ES)</option>
-              </Form.Select>
+                
+              </Form.Control>
 
               <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
                 type="tel"

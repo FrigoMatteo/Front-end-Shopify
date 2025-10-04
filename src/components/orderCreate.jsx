@@ -25,6 +25,16 @@ function ShowFormOrder(props){
     setSummaryProd(prev => prev.filter((_, i) => i !== index));
   };
 
+  const updateClients=async()=>{
+    const res=await getClients()
+
+    if (res?.error){
+        setErrorMessage("Error retrieving clients. Contact the administrator")
+    }else{
+        setCustomerList(res)
+    }
+  }
+
   useEffect(() => {
     const updateProducts=async()=>{
       const res=await getProducts()
@@ -33,16 +43,6 @@ function ShowFormOrder(props){
           setErrorMessage("Error retrieving the products. Contact the administrator")
       }else{
           setProductList(res.products.nodes)
-      }
-    }
-
-    const updateClients=async()=>{
-      const res=await getClients()
-
-      if (res?.error){
-          setErrorMessage("Error retrieving clients. Contact the administrator")
-      }else{
-          setCustomerList(res)
       }
     }
 
@@ -57,7 +57,7 @@ function ShowFormOrder(props){
 
   const containerStyle = {
     display: "grid", 
-    gridTemplateColumns: "35% 30% 35%", 
+    gridTemplateColumns: "30% 40% 30%", 
     width: '100%',
     height: '89.0vh',
     backgroundColor: '#FEF4B1',
@@ -76,7 +76,7 @@ function ShowFormOrder(props){
         </div>
           <SummaryCosts summaryProd={summaryProd} selectedCustomer={selectedCustomer} removeProduct={removeProduct} />
         <div style={{ padding: "1rem" }}>
-          <RequestCustomer setSelectedCustomer={setSelectedCustomer} customerList={customerList} setCustomerList={setCustomerList}/>
+          <RequestCustomer updateClients={updateClients} setSelectedCustomer={setSelectedCustomer} customerList={customerList} setCustomerList={setCustomerList}/>
         </div>
       </div>
       

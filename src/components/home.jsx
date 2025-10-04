@@ -26,6 +26,7 @@ function ShowFirm(props){
       <div className="welcome-text"
         style={{
           display: "flex",
+          flexDirection: "column",
           justifyContent: "space-between", // testo a sinistra, bottone a destra
           alignItems: "center",
           padding: "0.5rem 1rem",
@@ -38,12 +39,13 @@ function ShowFirm(props){
 
         <Button onClick={()=>logout()}
           style={{
-            width: "25%",
+            width: "50%",
             fontWeight: "bold",
             color: "#39300D",
             textAlign: "center",
             background: "#D6AD42",
             borderRadius: "5px",
+            marginTop:"5px",
             borderColor: "#D6AD42",
             fontSize: "0.8vw",
           }}
@@ -68,8 +70,8 @@ function ShowSingleOrder(props){
           {props.order.status === "OPEN" ? <i className="bi bi-square"></i> : <i className="bi bi-check-square"></i>}
           {props.order.status}
         </div>
+        <i class="bi bi-calendar-event"></i>{props.order.createdAt ? dayjs(props.order.createdAt).format('DD/MM/YYYY  HH:mm') : "Non definito"}
       </div>
-      {props.order.createdAt ? dayjs(props.order.createdAt).format('DD/MM/YYYY  HH:mm') : "Non definito"}
     </div>
   );
 
@@ -79,7 +81,7 @@ function ShowHistory(props) {
   return (
     <>
 
-    <div className="history-container" style={{ height: "68vh" }}>
+    <div className="history-container" style={{ height: "64.5vh" }}>
       <div className="single-order" style={{ height:'13.5vh',display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <i className="bi bi-bag-plus-fill" style={{ fontSize: '1.5rem'}}> Create Order</i>
       </div>
@@ -142,7 +144,7 @@ function HomeComponent(props){
     <div className="home-container">
       <Container fluid>
         <Row>
-          <Col xs={6} md={3}>
+          <Col xs={6} md={2}>
             <Row>
               <ShowFirm setUser={props.setUser} user={props.user} errorMessage={errorMessage} setErrorMessage={setErrorMessage}/>
             </Row>
@@ -151,7 +153,7 @@ function HomeComponent(props){
             </Row>
           </Col>
 
-          <Col xs={12} md={9}>
+          <Col xs={12} md={10}>
             <div className="form-section">
               <ShowFormOrder/>
             </div>

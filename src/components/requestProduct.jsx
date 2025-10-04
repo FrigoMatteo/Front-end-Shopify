@@ -226,9 +226,9 @@ function RequestProduct(props){
             <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw"}}>Prezzo</Form.Label>
             <InputGroup style={{ width: "6vw", height: "4vh", textAlign: "center" }}>
               <InputGroup.Text>€</InputGroup.Text>
-              <Form.Control type="number" required className="no-spinners"
+              <Form.Control type="number" required
                 value={pricePersonalized}                  // <-- bind allo stato
-                onChange={(e) => setPricePersonalized(parseFloat(e.target.value) || 0)} // <-- converte in numero
+                onChange={(e) => setPricePersonalized(parseFloat(e.target.value))} // <-- converte in numero
               />
             </InputGroup>
           </Form.Group>
