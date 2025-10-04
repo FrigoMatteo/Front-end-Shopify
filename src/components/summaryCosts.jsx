@@ -77,7 +77,7 @@ function SummaryCosts(props){
                       border: 'none',
                       color: '#c0392b',
                       cursor: 'pointer',
-                      fontSize: '1.0rem'
+                      fontSize: '1.6rem'
                     }}
                   >
                     <i className="bi bi-trash" />

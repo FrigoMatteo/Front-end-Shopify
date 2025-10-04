@@ -46,10 +46,12 @@ function RequestProduct(props){
   const [selectProd, setSelectProd]=useState("");
 
   const [valueProd, setValueProd] = useState(1);
+  const [discountProd, setDiscountProd] = useState(0);
 
   const [valuePersonalized, setValuePersonalized] = useState(1);
   const [namePersonalized, setNamePersonalized] = useState("");
   const [pricePersonalized, setPricePersonalized] = useState("");
+  const [discountPersonalized, setDiscountPersonalized] = useState(0);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -100,12 +102,14 @@ function RequestProduct(props){
         price: product.variants.nodes[0].price 
           ? (parseFloat(product.variants.nodes[0].price) * valueProd).toFixed(2).toString() 
           : "Undefined",
-        quantity:valueProd
+        quantity:valueProd,
+        discount: discountProd
       })
     
     setValueProd(1)
     setSelectProd("")
     setSearchProduct("")
+    setDiscountProd(0)
     //}else{
     //  setErrorMessage("Quantità non consentita")
     //}
@@ -122,12 +126,14 @@ function RequestProduct(props){
         price: pricePersonalized 
           ? (pricePersonalized * valuePersonalized).toFixed(2).toString() 
           : "Undefined",
-        quantity:valuePersonalized
+        quantity:valuePersonalized,
+        discount: discountPersonalized
       })
     
     setValuePersonalized(1)
     setNamePersonalized("")
     setPricePersonalized("")
+    setDiscountPersonalized(0)
 
   };
 
@@ -158,22 +164,18 @@ function RequestProduct(props){
                 step={1}
                 style={{ width: "4vw", height:'4vh',textAlign: "center" }}
               />
+              <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", marginLeft: '8px', width:'60%'}}>Sconto(%):</Form.Label>
+              <Form.Control
+                type="number"
+                value={discountProd}
+                onChange={(e)=>{setDiscountProd(parseInt(e.target.value) || 0)}}
+                min={0}
+                max={100}
+                step={1}
+                style={{ width: "4vw", height:'4vh',textAlign: "center" }}
+              />
             </div>
-
-            <Button type="submit"  style={{ 
-                  width:'50%',
-                  fontWeight: 'bold', 
-                  color: '#39300D',
-                  textAlign: 'center',
-                  background: '#D6AD42',
-                  borderRadius: '5px',
-                  borderColor:'#D6AD42',
-                  fontSize: "0.8vw"
-              }}>
-              Aggiungi al carello
-            </Button>
           </div>
-        </Form>
               <div className='order-create' style={{
               background: '#39300D',
               color: '#39300D',
@@ -187,10 +189,25 @@ function RequestProduct(props){
             {products.map(e => (<SingleProduct key={e.id} targetSelect={selectProd==e.id ? true : false} prod={e} selectProdList={selectProdList} /> ))}
 
         </div>
+        <div className="d-flex justify-content-center" style={{marginTop:'10px'}}>
+          <Button type="submit"  style={{ 
+                  width:'50%',
+                  fontWeight: 'bold', 
+                  color: '#39300D',
+                  textAlign: 'center',
+                  background: '#D6AD42',
+                  borderRadius: '5px',
+                  borderColor:'#D6AD42',
+                  fontSize: "0.8vw"
+              }}>
+              Aggiungi al carrello
+          </Button>
+        </div>
+        </Form>
       </div>
     </div>
     
-    <div className="product-box" style={{height:'27vh'}}>
+    <div className="product-box" style={{height:'auto'}}>
       <div className='order-info'>
         <div style={{ color: '#39300D', fontSize: "1.1vw",fontWeight:'bold'}}>Crea Articolo Personalizzato</div>
         <Form onSubmit={handleSubmitPersonalized}>
@@ -216,19 +233,35 @@ function RequestProduct(props){
             </InputGroup>
           </Form.Group>
           <div className="d-flex align-items-center">
-              <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'60%'}}>Quantità:</Form.Label>
-              <Form.Control
-                type="number"
-                value={valuePersonalized}
-                onChange={(e)=>{setValuePersonalized(parseInt(e.target.value) || 1)}}
-                min={1}
-                max={100}
-                step={1}
-                style={{ width: "4vw", height:'4vh',textAlign: "center" }}
-              />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'60%'}}>Sconto(%):</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={discountPersonalized}
+                  onChange={(e)=>{setDiscountPersonalized(parseInt(e.target.value) || 0)}}
+                  min={0}
+                  max={100}
+                  step={1}
+                  style={{ width: "4vw", height:'4vh',textAlign: "center", marginRight: '8px' }}
+                />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'60%'}}>Quantità:</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={valuePersonalized}
+                  onChange={(e)=>{setValuePersonalized(parseInt(e.target.value) || 1)}}
+                  min={1}
+                  max={100}
+                  step={1}
+                  style={{ width: "4vw", height:'4vh',textAlign: "center" }}
+                />
+              </div>
             </div>
           </div>
-          <div className="d-flex justify-content-end">
+          </div>
+          <div className="d-flex justify-content-center">
             <Button
               type="submit"
               style={{
