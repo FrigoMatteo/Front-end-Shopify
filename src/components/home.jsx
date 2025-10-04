@@ -63,10 +63,10 @@ function ShowSingleOrder(props){
     <div className="single-order">
       <div className="order-info">
         <div><i className="bi bi-basket-fill"></i> Order: {props.order.name}</div>
-        <div><i className="bi bi-person-badge"></i> Client: {props.order.customer ? props.order.customer.displayName : "Non definito"}</div>
+        <div><i className="bi bi-person-badge"></i> {props.order.customer ? props.order.customer.displayName : "Non definito"}</div>
         <div className={props.order.status === "OPEN" ? "status-open" : "status-completed"}>
           {props.order.status === "OPEN" ? <i className="bi bi-square"></i> : <i className="bi bi-check-square"></i>}
-          Status: {props.order.status}
+          {props.order.status}
         </div>
       </div>
       {props.order.createdAt ? dayjs(props.order.createdAt).format('DD/MM/YYYY  HH:mm') : "Non definito"}

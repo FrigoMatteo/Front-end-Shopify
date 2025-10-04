@@ -14,9 +14,17 @@ function RequestCustomer(props){
   
   // New customer form states
   const [newCustomerName, setNewCustomerName] = useState("");
+  const [newCustomerSurname, setNewCustomerSurname] = useState("");
   const [newCustomerEmail, setNewCustomerEmail] = useState("");
+  const [newCustomerSpam, setNewCustomerSpam] = useState(false);
+  const [newCustomerCountry, setNewCustomerCountry] = useState("");
+  const [newCustomerCompany, setNewCustomerCompany] = useState("");
   const [newCustomerAddress, setNewCustomerAddress] = useState("");
+  const [newCustomerCity, setNewCustomerCity] = useState("");
+  const [newCustomerPostalCode, setNewCustomerPostalCode] = useState("");
+  const [newCustomerProvince, setNewCustomerProvince] = useState("");
   const [newCustomerPhone, setNewCustomerPhone] = useState("");
+  const [newCustomerPhonePrefix, setNewCustomerPhonePrefix] = useState("");
   const [newCustomerFiscalCode, setNewCustomerFiscalCode] = useState("");
   
   const [errorMessage, setErrorMessage] = useState('');
@@ -48,10 +56,42 @@ function RequestCustomer(props){
   }
 
   const selectCustomerList = (id) => {
+    // toggle selection and notify parent with a normalized customer object
     if (id === selectCustomer) {
       setSelectCustomer("");
+      props.setSelectedCustomer(null);
     } else {
       setSelectCustomer(id);
+      // find the customer in the current filtered list first, fallback to full prop list
+      const found = customers.find(c => c.id === id) || (props.customerList || []).find(c => c.id === id);
+      if (found) {
+        // normalize to include all useful fields so SummaryCosts can show full info
+        const phonePrefix = found.phonePrefix || found.phone_prefix || "";
+        const phoneNumber = found.phone || found.phoneNumber || (found.defaultPhone && found.defaultPhone.number) || "";
+        const fullPhone = phonePrefix ? `${phonePrefix} ${phoneNumber}` : phoneNumber;
+
+        const normalized = {
+          id: found.id,
+          name: found.name || found.displayName || found.firstName || "",
+          surname: found.surname || found.lastName || "",
+          email: (found.email) || (found.defaultEmailAddress && found.defaultEmailAddress.emailAddress) || "",
+          company: found.company || found.organization || "",
+          address: found.address || (found.defaultAddress && (found.defaultAddress.address1 || found.defaultAddress.formatted)) || "",
+          city: found.city || (found.defaultAddress && found.defaultAddress.city) || "",
+          postalCode: found.postalCode || (found.defaultAddress && found.defaultAddress.zip) || "",
+          province: found.province || (found.defaultAddress && found.defaultAddress.province) || "",
+          countryCode: found.countryCode || found.country || (found.defaultAddress && found.defaultAddress.country) || "",
+          countryName: found.countryName || "",
+          phonePrefix: phonePrefix,
+          phone: phoneNumber,
+          fullPhone: fullPhone,
+          fiscalCode: found.fiscalCode || found.taxNumber || "",
+          spam: typeof found.spam === 'boolean' ? found.spam : !!found.acceptsMarketing || false
+        };
+        props.setSelectedCustomer(normalized);
+      } else {
+        props.setSelectedCustomer(null);
+      }
     }
   }
 
@@ -67,19 +107,30 @@ function RequestCustomer(props){
 
   const handleAddNewCustomer = (e) => {
     e.preventDefault();
-    
-    if (!newCustomerName || !newCustomerEmail) {
-      setErrorMessage("Name and Email are required.");
+
+    if (!newCustomerName || !newCustomerSurname || !newCustomerEmail ||
+       !newCustomerAddress || !newCustomerPhone || !newCustomerFiscalCode ||
+        !newCustomerCompany || !newCustomerCity || !newCustomerPostalCode ||
+         !newCustomerProvince || !newCustomerPhonePrefix) {
+      setErrorMessage("All fields are required.");
       return;
     }
 
     const newCustomer = {
       id: "gid://shopify/Customer/" + Date.now(),
       name: newCustomerName,
+      surname: newCustomerSurname,
       email: newCustomerEmail,
-      address: newCustomerAddress,
+      phonePrefix: newCustomerPhonePrefix,
       phone: newCustomerPhone,
-      fiscalCode: newCustomerFiscalCode
+      fiscalCode: newCustomerFiscalCode,
+      company: newCustomerCompany,
+      country: newCustomerCountry,
+      city: newCustomerCity,
+      address: newCustomerAddress,
+      postalCode: newCustomerPostalCode,
+      province: newCustomerProvince,
+      spam: newCustomerSpam,
     };
 
     // Add to customers list
@@ -103,6 +154,14 @@ function RequestCustomer(props){
     setNewCustomerPhone("");
     setNewCustomerFiscalCode("");
     setErrorMessage("");
+    setNewCustomerCompany("");
+    setNewCustomerCity("");
+    setNewCustomerPostalCode("");
+    setNewCustomerProvince("");
+    setNewCustomerPhonePrefix("");
+    setNewCustomerSpam(false);
+    setNewCustomerCountry("");
+    setNewCustomerSurname("");
   };
 
   return(
@@ -129,27 +188,10 @@ function RequestCustomer(props){
             />
           ))}
         </div>
-        <div className="d-flex justify-content-end">
-            <Button
-              onClick={()=>{console.log("Selezionami e portami nel carrello. id:",selectCustomer)}}
-              style={{
-                width: "40%",
-                fontWeight: "bold",
-                color: "#39300D",
-                textAlign: "center",
-                background: "#D6AD42",
-                borderRadius: "5px",
-                borderColor: "#D6AD42",
-                fontSize: "0.8vw",
-              }}
-            >
-              Seleziona cliente
-            </Button>
-          </div>
       </div>
     </div>
     
-    <div className="product-box" style={{height:'47vh', alignItems: 'flex-start', display: 'block'}}>
+    <div className="product-box" style={{height:'auto', alignItems: 'flex-start', display: 'block'}}>
       <div className='order-info'>
         <div style={{ color: '#39300D', fontSize: "1.1vw", fontWeight:'bold', marginBottom: '10px'}}>Aggiungi Nuovo Cliente</div>
         
@@ -158,13 +200,24 @@ function RequestCustomer(props){
             <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Nome:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
               type="text"
-              placeholder="Nome completo"
+              placeholder="Nome"
               value={newCustomerName}
               onChange={(e) => setNewCustomerName(e.target.value)}
               required
             />
           </Form.Group>
-          
+
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Cognome:</Form.Label>
+            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
+              type="text"
+              placeholder="Cognome"
+              value={newCustomerSurname}
+              onChange={(e) => setNewCustomerSurname(e.target.value)}
+              required
+            />
+          </Form.Group>
+
           <Form.Group className="mb-2 d-flex align-items-center">
             <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Email:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
@@ -175,27 +228,21 @@ function RequestCustomer(props){
               required
             />
           </Form.Group>
-          
+
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Indirizzo:</Form.Label>
-            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
-              type="text"
-              placeholder="Via, città, CAP"
-              value={newCustomerAddress}
-              onChange={(e) => setNewCustomerAddress(e.target.value)}
-            />
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Spam:</Form.Label>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+              <Form.Check
+                type="checkbox"
+                id="newCustomerSpam"
+                label="Ricevere promozioni via email"
+                checked={!!newCustomerSpam}
+                onChange={(e) => setNewCustomerSpam(e.target.checked)}
+                style={{ fontSize: '0.8vw' }}
+              />
+            </div>
           </Form.Group>
-          
-          <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Telefono:</Form.Label>
-            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
-              type="tel"
-              placeholder="+39 123 456 7890"
-              value={newCustomerPhone}
-              onChange={(e) => setNewCustomerPhone(e.target.value)}
-            />
-          </Form.Group>
-          
+
           <Form.Group className="mb-2 d-flex align-items-center">
             <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Codice Fiscale:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}     
@@ -204,6 +251,103 @@ function RequestCustomer(props){
               value={newCustomerFiscalCode}
               onChange={(e) => setNewCustomerFiscalCode(e.target.value)}
             />
+          </Form.Group>
+
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Azienda:</Form.Label>
+            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
+              type="text"
+              placeholder=""
+              value={newCustomerCompany}
+              onChange={(e) => setNewCustomerCompany(e.target.value)}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Paese:</Form.Label>
+            <Form.Select
+              value={newCustomerCountry}
+              onChange={(e) => setNewCustomerCountry(e.target.value)}
+              aria-label="Seleziona Paese"
+              style={{ fontSize: '0.8vw', flex: '1' }}
+              required
+            >
+              <option value="">Seleziona Paese</option>
+              <option value="IT">Italy (+39)</option>
+              <option value="US">United States (+1)</option>
+              <option value="GB">United Kingdom (+44)</option>
+              <option value="FR">France (+33)</option>
+              <option value="DE">Germany (+49)</option>
+              <option value="ES">Spain (+34)</option>
+            </Form.Select>
+          </Form.Group>
+          
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Indirizzo e civico:</Form.Label>
+            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
+              type="text"
+              placeholder="Via e numero civico"
+              value={newCustomerAddress}
+              onChange={(e) => setNewCustomerAddress(e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Comune:</Form.Label>
+            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
+              type="text"
+              placeholder="Comune"
+              value={newCustomerCity}
+              onChange={(e) => setNewCustomerCity(e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>CAP:</Form.Label>
+            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
+              type="text"
+              placeholder="CAP"
+              value={newCustomerPostalCode}
+              onChange={(e) => setNewCustomerPostalCode(e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Provincia:</Form.Label>
+            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
+              type="text"
+              placeholder="Provincia"
+              value={newCustomerProvince}
+              onChange={(e) => setNewCustomerProvince(e.target.value)}
+            />
+          </Form.Group>
+          
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Telefono:</Form.Label>
+            <div style={{ display: 'flex', flex: 1, gap: '8px', alignItems: 'center' }}>
+              <Form.Select
+                value={newCustomerPhonePrefix}
+                onChange={(e) => setNewCustomerPhonePrefix(e.target.value)}
+                aria-label="Prefisso internazionale"
+                style={{ width: '110px', fontSize: '0.8vw' }}
+              >
+                <option value="">Prefisso</option>
+                <option value="+39">+39 (IT)</option>
+                <option value="+1">+1 (US)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+33">+33 (FR)</option>
+                <option value="+49">+49 (DE)</option>
+                <option value="+34">+34 (ES)</option>
+              </Form.Select>
+
+              <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
+                type="tel"
+                placeholder="123 456 7890"
+                value={newCustomerPhone}
+                onChange={(e) => setNewCustomerPhone(e.target.value)}
+              />
+            </div>
           </Form.Group>
           
           <hr style={{ border: '1px solid #D6AD42', margin: '15px 0' }} />

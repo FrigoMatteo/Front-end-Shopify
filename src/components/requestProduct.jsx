@@ -92,23 +92,23 @@ function RequestProduct(props){
 
     const product = props.productList.find(p => p.id === selectProd);
     
-    if (valueProd<=product.variants.nodes[0].inventoryQuantity ){
-      props.addProduct(
-        {
-          id:product.variants.nodes[0].id ? product.variants.nodes[0].id : "Undefined",
-          title:product.title ? product.title : "Undefined",
-          price: product.variants.nodes[0].price 
-            ? (parseFloat(product.variants.nodes[0].price) * valueProd).toFixed(2).toString() 
-            : "Undefined",
-          quantity:valueProd
-        })
-      
-      setValueProd(1)
-      setSelectProd("")
-      setSearchProduct("")
-    }else{
-      setErrorMessage("Quantità non consentita")
-    }
+    //if (valueProd<=product.variants.nodes[0].inventoryQuantity ){
+    props.addProduct(
+      {
+        id:product.variants.nodes[0].id ? product.variants.nodes[0].id : "Undefined",
+        title:product.title ? product.title : "Undefined",
+        price: product.variants.nodes[0].price 
+          ? (parseFloat(product.variants.nodes[0].price) * valueProd).toFixed(2).toString() 
+          : "Undefined",
+        quantity:valueProd
+      })
+    
+    setValueProd(1)
+    setSelectProd("")
+    setSearchProduct("")
+    //}else{
+    //  setErrorMessage("Quantità non consentita")
+    //}
 
   };
 
@@ -160,7 +160,7 @@ function RequestProduct(props){
               />
             </div>
 
-            <Button type="submit" style={{ 
+            <Button type="submit"  style={{ 
                   width:'50%',
                   fontWeight: 'bold', 
                   color: '#39300D',
