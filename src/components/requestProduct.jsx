@@ -141,6 +141,7 @@ function RequestProduct(props){
     <>
     <div className="product-box">
       <div className='order-info'>
+        <div style={{ color: '#39300D', fontSize: "1.1vw", fontWeight:'bold', marginBottom: '10px' }}>Aggiungi Prodotto</div>
         <InputGroup style={{marginBottom:'10px'}}>
           <InputGroup.Text onClick={handleSearch} style={{background: '#D6AD42', cursor: "pointer"}} ><i className="bi bi-search"></i></InputGroup.Text>
           <Form.Control type="text" placeholder="Cerca prodotto" onKeyDown={handleKeyDown} value={searchProduct} onChange={ev => setSearchProduct(ev.target.value) }/>

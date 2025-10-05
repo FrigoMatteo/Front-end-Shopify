@@ -55,11 +55,59 @@ function ShowFormOrder(props){
     console.log("Prodotti nel carrello:", summaryProd);
   }, [summaryProd]);
 
+  // payment link state
+  const [paymentLink, setPaymentLink] = useState("");
+  const [sendingOrder, setSendingOrder] = useState(false);
+  const [copyStatus, setCopyStatus] = useState("");
+
+  const sendOrder = async () => {
+    if (!summaryProd || summaryProd.length === 0) {
+      setErrorMessage("Impossibile inviare: il carrello è vuoto.");
+      return;
+    }
+    setSendingOrder(true);
+    setCopyStatus("");
+
+    try {
+      // Since no order-create API is defined here, simulate a server response with a payment link.
+      // Replace this block with a real API call when available.
+      await new Promise(res => setTimeout(res, 700));
+      const fakeToken = Math.random().toString(36).slice(2, 10);
+      const link = `https://payment.example.com/pay/${Date.now()}-${fakeToken}`;
+      setPaymentLink(link);
+    } catch (err) {
+      setErrorMessage('Errore durante l\'invio dell\'ordine');
+    } finally {
+      setSendingOrder(false);
+    }
+  };
+
+  const copyLink = async () => {
+    if (!paymentLink) return;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(paymentLink);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = paymentLink;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      setCopyStatus('Copiato!');
+      setTimeout(() => setCopyStatus(''), 2000);
+    } catch (err) {
+      setCopyStatus('Errore copia');
+      setTimeout(() => setCopyStatus(''), 2000);
+    }
+  };
+
   const containerStyle = {
     display: "grid", 
     gridTemplateColumns: "30% 40% 30%", 
     width: '100%',
-    height: '89.0vh',
+    height: '83.0vh',
     backgroundColor: '#FEF4B1',
     border: '4px solid gold',
     borderColor: '#D6AD42',
@@ -79,8 +127,24 @@ function ShowFormOrder(props){
           <RequestCustomer updateClients={updateClients} setSelectedCustomer={setSelectedCustomer} customerList={customerList} setCustomerList={setCustomerList}/>
         </div>
       </div>
+      {/* Full-width row with order send + payment link */}
+      <div style={{ marginTop: '12px', width: '100%', display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ flex: '0 0 auto' }}>
+          <Button onClick={sendOrder} disabled={sendingOrder} style={{ background: '#D6AD42', color: '#39300D', borderColor: '#D6AD42', fontWeight: 'bold' }}>
+            {sendingOrder ? 'Invio...' : 'Invia ordine'}
+          </Button>
+        </div>
+
+        <div style={{ flex: 1 }}>
+          <Form.Control type="text" readOnly value={paymentLink} placeholder="Link di pagamento apparirà qui" />
+        </div>
+
+        <div style={{ flex: '0 0 auto', display: 'flex', gap: '8px' }}>
+          <Button onClick={copyLink} disabled={!paymentLink} style={{ background: '#ffffff', color: '#39300D', borderColor: '#D6AD42' }}>Copia link</Button>
+          <div style={{ alignSelf: 'center', color: '#39300D' }}>{copyStatus}</div>
+        </div>
+      </div>
       
-    
     </>
   );
 

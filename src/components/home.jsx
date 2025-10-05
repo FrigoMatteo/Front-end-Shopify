@@ -82,7 +82,7 @@ function ShowHistory(props) {
   return (
     <>
 
-    <div className="history-container" style={{ height: "70vh" }}>
+    <div className="history-container">
       <div className="single-order" style={{ height:'13.5vh',display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <i className="bi bi-bag-plus-fill" style={{ fontSize: '1.5rem'}}> Create Order</i>
       </div>

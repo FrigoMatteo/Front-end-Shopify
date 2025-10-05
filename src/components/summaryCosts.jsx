@@ -92,13 +92,13 @@ function SummaryCosts(props){
               marginBottom: '15px'
             }}>
               <h5 style={{ color: '#D6AD42', textAlign: 'center', marginBottom: '10px' }}>Cliente Selezionato</h5>
-              <div><strong>Nome:</strong> {selectedCustomer.name} {selectedCustomer.surname || ''}</div>
-              <div><strong>Email:</strong> {selectedCustomer.email}</div>
-              {combinedAddress && <div><strong>Indirizzo:</strong> {combinedAddress}</div>}
-              {(selectedCustomer.countryName || selectedCustomer.countryCode) && <div><strong>Paese:</strong> {selectedCustomer.countryName || selectedCustomer.countryCode}</div>}
-              {combinedPhone && <div><strong>Telefono:</strong> {combinedPhone}</div>}
-              {selectedCustomer.fiscalCode && <div><strong>Codice Fiscale:</strong> {selectedCustomer.fiscalCode}</div>}
-              <div><strong>Newsletter:</strong> {selectedCustomer.spam ? 'Sì' : 'No'}</div>
+              <div><strong style={{ color: '#D6AD42' }}>Nome:</strong> {selectedCustomer.name} {selectedCustomer.surname || ''}</div>
+              <div><strong style={{ color: '#D6AD42' }}>Email:</strong> {selectedCustomer.email}</div>
+              {combinedAddress && <div><strong style={{ color: '#D6AD42' }}>Indirizzo:</strong> {combinedAddress}</div>}
+              {(selectedCustomer.countryName || selectedCustomer.countryCode) && <div><strong style={{ color: '#D6AD42' }}>Paese:</strong> {selectedCustomer.countryName || selectedCustomer.countryCode}</div>}
+              {combinedPhone && <div><strong style={{ color: '#D6AD42' }}>Telefono:</strong> {combinedPhone}</div>}
+              {selectedCustomer.fiscalCode && <div><strong style={{ color: '#D6AD42' }}>Codice Fiscale:</strong> {selectedCustomer.fiscalCode}</div>}
+              <div><strong style={{ color: '#D6AD42' }}>Newsletter:</strong> {selectedCustomer.spam ? 'Sì' : 'No'}</div>
             </div>
           )}
 
@@ -117,7 +117,7 @@ function SummaryCosts(props){
             <div style={{ color: '#666' }}>Nessun prodotto aggiunto</div>
           ) : (
             summaryProd.map((p, idx) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 4px', borderBottom: '1px dashed rgba(0,0,0,0.05)' }}>
+              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 4px', borderBottom: '2px dashed rgba(0,0,0,0.3)' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: '700', color: '#39300D' }}>{p.title}</div>
                   {renderPrice(p)}
@@ -163,28 +163,36 @@ function SummaryCosts(props){
         </div>
       </div>
 
-      {/* payment section */}
-      <h3 style={{ color: '#39300D', textAlign: 'center', marginBottom: '12px' }}>Pagamento</h3>
+      {/* payment section - styled like other summary boxes */}
       <div style={{
-          background: '#FEF4B1',
-          color: '#39300D',
-          borderRadius: '8px',
-          padding: '15px',
-          border: '3px solid #D6AD42'
+        background: '#39300D',
+        color: '#FEF4B1',
+        borderRadius: '8px',
+        padding: '12px',
+        border: '3px solid #D6AD42',
+        marginBottom: '12px'
       }}>
+        <h5 style={{ color: '#D6AD42', textAlign: 'center', marginBottom: '8px' }}>Pagamento</h5>
+
+        <div style={{ background: '#FEF4B1', color: '#39300D', border: '2px solid #D6AD42', borderRadius: '6px', padding: '12px' }}>
           <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
-              Subtotale: <span style={{ float: 'right' }}>{subtotal.toFixed(2)}€</span>
+            Subtotale: <span style={{ float: 'right' }}>{subtotal.toFixed(2)}€</span>
           </div>
+
           <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
-              Sconto ({cartDiscount.toFixed(2)}%): <span style={{ float: 'right' }}>-{((subtotal / 100) * cartDiscount).toFixed(2)}€</span>
+            Sconto ({Number(cartDiscount).toFixed(2)}%): <span style={{ float: 'right' }}>-{((subtotal / 100) * Number(cartDiscount)).toFixed(2)}€</span>
           </div>
+
           <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
-              Spese di Spedizione: <span style={{ float: 'right' }}>0.0€</span>
+            Spese di Spedizione: <span style={{ float: 'right' }}>0.00€</span>
           </div>
+
           <div style={{ marginBottom: '15px', fontWeight: 'bold' }}>
-              Imposta stimata (IT IVA 22% - Inclusa): <span style={{ float: 'right' }}>{(finalTotal * 0.22).toFixed(2)}€</span>
+            IT IVA 22% (Inclusa): <span style={{ float: 'right' }}>{(finalTotal * 0.22).toFixed(2)}€</span>
           </div>
+
           <hr style={{ border: '1px solid #D6AD42', margin: '15px 0' }} />
+
           <div style={{ 
               fontSize: '1.2em', 
               fontWeight: 'bold', 
@@ -194,8 +202,9 @@ function SummaryCosts(props){
               background: '#D6AD42',
               borderRadius: '5px'
           }}>
-              Totale: {finalTotal.toFixed(2)}€
+            Totale: {finalTotal.toFixed(2)}€
           </div>
+        </div>
       </div>
     </div>
   );
