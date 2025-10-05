@@ -44,9 +44,10 @@
     justify-content: space-between;
     align-items: center;
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-.single-order:hover {
+.single-order:hover ,.single-order.selected{
     background: #D6AD42;
     color: #39300D;
     transform: translateY(-2px);

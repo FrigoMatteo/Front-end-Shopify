@@ -63,7 +63,7 @@ function ShowFirm(props){
 function ShowSingleOrder(props){
 
   return (
-    <div className="single-order">
+    <div className={`single-order ${props.selectDraft === props.order.id ? 'selected' : ''}`} onClick={()=>props.handleSelect(props.order.id)}>
       <div className="order-info">
         <div><i className="bi bi-basket-fill"></i> Order: {props.order.name}</div>
         <div><i className="bi bi-person-badge"></i> {props.order.customer ? props.order.customer.displayName : "Non definito"}</div>
@@ -83,11 +83,12 @@ function ShowHistory(props) {
     <>
 
     <div className="history-container">
-      <div className="single-order" style={{ height:'13.5vh',display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div className={`single-order ${props.selectDraft === 0 ? 'selected' : ''}`} 
+      hover={props.selectDraft} onClick={()=>props.handleSelect(0)} style={{ height:'13.5vh',display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <i className="bi bi-bag-plus-fill" style={{ fontSize: '1.5rem'}}> Create Order</i>
       </div>
         {props.orders.map(e => (
-          <ShowSingleOrder key={e.node.id} order={e.node} />
+          <ShowSingleOrder selectDraft={props.selectDraft} handleSelect={props.handleSelect} key={e.node.id} order={e.node} />
         ))}
       
     </div>
@@ -101,7 +102,16 @@ function HomeComponent(props){
 
   const [orders,setOrders]=useState([])
   const [errorMessage, setErrorMessage] = useState('');
+  const [selectDraft, setSelectDraft] = useState(0);
   const navigate=useNavigate()
+
+
+  const handleSelect=(id)=>{
+
+    console.log(id)
+    setSelectDraft(id)
+
+  }
 
   // State used when an action is perfomed (such a pre-order registered)
   const [change,setChange]=useState(true)
@@ -150,7 +160,7 @@ function HomeComponent(props){
               <ShowFirm setUser={props.setUser} user={props.user} errorMessage={errorMessage} setErrorMessage={setErrorMessage}/>
             </Row>
             <Row>
-              <ShowHistory orders={orders}/>
+              <ShowHistory selectDraft={selectDraft} handleSelect={handleSelect} orders={orders}/>
             </Row>
           </Col>
 
