@@ -29,7 +29,7 @@ function ShowFormOrder(props){
     const res=await getClients()
 
     if (res?.error){
-        setErrorMessage("Error retrieving clients. Contact the administrator")
+        setErrorMessage(res.error)
     }else{
         setCustomerList(res)
     }
@@ -40,9 +40,9 @@ function ShowFormOrder(props){
       const res=await getProducts()
 
       if (res?.error){
-          setErrorMessage("Error retrieving the products. Contact the administrator")
+          setErrorMessage(res.error)
       }else{
-          setProductList(res.products.nodes)
+          setProductList(res)
       }
     }
 

@@ -71,7 +71,7 @@ function ShowSingleOrder(props){
           {props.order.status === "OPEN" ? <i className="bi bi-square"></i> : <i className="bi bi-check-square"></i>}
           {props.order.status}
         </div>
-        <i class="bi bi-calendar-event"></i>{props.order.createdAt ? dayjs(props.order.createdAt).format('DD/MM/YYYY  HH:mm') : "Non definito"}
+        <i className="bi bi-calendar-event"></i>{props.order.createdAt ? dayjs(props.order.createdAt).format('DD/MM/YYYY  HH:mm') : "Non definito"}
       </div>
     </div>
   );
@@ -129,7 +129,7 @@ function HomeComponent(props){
           const res=await getOrders()
 
           if (res?.error){
-              setErrorMessage("Error retriving the orders. Contact the administrator")
+              setErrorMessage(res.error)
           }else{
               setOrders(res.draftOrders.edges)
           }
