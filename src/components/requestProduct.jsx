@@ -152,35 +152,12 @@ function RequestProduct(props){
             }
           }}>
           <div className="d-flex justify-content-between align-items-center">
-
-            <div className="d-flex align-items-center">
-              <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'60%'}}>Quantità:</Form.Label>
-              <Form.Control
-                type="number"
-                value={valueProd}
-                onChange={(e)=>{setValueProd(parseInt(e.target.value) || 1)}}
-                min={1}
-                max={100}
-                step={1}
-                style={{ width: "4vw", height:'4vh',textAlign: "center" }}
-              />
-              <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", marginLeft: '8px', width:'60%'}}>Sconto(%):</Form.Label>
-              <Form.Control
-                type="number"
-                value={discountProd}
-                onChange={(e)=>{setDiscountProd(parseInt(e.target.value) || 0)}}
-                min={0}
-                max={100}
-                step={1}
-                style={{ width: "4vw", height:'4vh',textAlign: "center" }}
-              />
-            </div>
           </div>
               <div className='order-create' style={{
               background: '#39300D',
               color: '#39300D',
               borderRadius: '8px',
-              padding: '15px',
+              padding: '12px',
               border: '3px solid #D6AD42',
               height: '40vh',
               overflowY: 'auto',
@@ -189,6 +166,30 @@ function RequestProduct(props){
             {products.map(e => (<SingleProduct key={e.id} targetSelect={selectProd==e.id ? true : false} prod={e} selectProdList={selectProdList} /> ))}
 
         </div>
+        <div className="d-flex align-items-center">
+              <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'40%'}}>Quantità:</Form.Label>
+              <Form.Control
+                type="number"
+                value={valueProd}
+                onChange={(e)=>{setValueProd(parseInt(e.target.value) || 1)}}
+                min={1}
+                max={100}
+                step={1}
+                style={{ width: "8vw", height:'4vh', textAlign: "center" }}
+              />
+            </div>
+            <div className="d-flex align-items-center" style={{marginTop:'8px'}}>
+              <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'40%'}}>Sconto(%):</Form.Label>
+              <Form.Control
+                type="number"
+                value={discountProd}
+                onChange={(e)=>{setDiscountProd(parseInt(e.target.value) || 0)}}
+                min={0}
+                max={100}
+                step={1}
+                style={{ width: "8vw", height:'4vh',textAlign: "center" }}
+              />
+            </div>
         <div className="d-flex justify-content-center" style={{marginTop:'10px'}}>
           <Button type="submit"  style={{ 
                   width:'50%',
@@ -211,9 +212,9 @@ function RequestProduct(props){
       <div className='order-info'>
         <div style={{ color: '#39300D', fontSize: "1.1vw",fontWeight:'bold'}}>Crea Articolo Personalizzato</div>
         <Form onSubmit={handleSubmitPersonalized}>
-          <Form.Group className="d-flex align-items-center" style={{ height: "5vh", textAlign: "center" }}>
-            <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw"}}>Articolo</Form.Label>
-            <Form.Control style={{fontSize: "0.8vw"}}
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Articolo:</Form.Label>
+            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
               type="text"
               placeholder="Inserisci il nome dell'articolo"
               value={namePersonalized}
@@ -221,46 +222,44 @@ function RequestProduct(props){
               required
             />
           </Form.Group>
-          <div className="d-flex justify-content-between align-items-center">
-          <Form.Group className="d-flex align-items-center">
-            <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw"}}>Prezzo</Form.Label>
-            <InputGroup style={{ width: "6vw", height: "4vh", textAlign: "center" }}>
+
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Prezzo:</Form.Label>
+            <InputGroup style={{flex: 1, maxWidth: '220px'}}>
               <InputGroup.Text>€</InputGroup.Text>
               <Form.Control type="number" required
-                value={pricePersonalized}                  // <-- bind allo stato
-                onChange={(e) => setPricePersonalized(parseFloat(e.target.value))} // <-- converte in numero
+                value={pricePersonalized}
+                onChange={(e) => setPricePersonalized(parseFloat(e.target.value))}
               />
             </InputGroup>
           </Form.Group>
-          <div className="d-flex align-items-center">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'60%'}}>Sconto(%):</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={discountPersonalized}
-                  onChange={(e)=>{setDiscountPersonalized(parseInt(e.target.value) || 0)}}
-                  min={0}
-                  max={100}
-                  step={1}
-                  style={{ width: "4vw", height:'4vh',textAlign: "center", marginRight: '8px' }}
-                />
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'60%'}}>Quantità:</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={valuePersonalized}
-                  onChange={(e)=>{setValuePersonalized(parseInt(e.target.value) || 1)}}
-                  min={1}
-                  max={100}
-                  step={1}
-                  style={{ width: "4vw", height:'4vh',textAlign: "center" }}
-                />
-              </div>
-            </div>
-          </div>
-          </div>
+
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Sconto(%):</Form.Label>
+            <Form.Control
+              type="number"
+              value={discountPersonalized}
+              onChange={(e)=>{setDiscountPersonalized(parseInt(e.target.value) || 0)}}
+              min={0}
+              max={100}
+              step={1}
+              style={{ width: "6vw", height:'4vh',textAlign: "center" }}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Quantità:</Form.Label>
+            <Form.Control
+              type="number"
+              value={valuePersonalized}
+              onChange={(e)=>{setValuePersonalized(parseInt(e.target.value) || 1)}}
+              min={1}
+              max={100}
+              step={1}
+              style={{ width: "6vw", height:'4vh',textAlign: "center" }}
+            />
+          </Form.Group>
+
           <div className="d-flex justify-content-center">
             <Button
               type="submit"

@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react'
+import { useState,useEffect, useMemo } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Alert,Navbar , Container, Image, Button, Badge,InputGroup,Form, Col,Row} from 'react-bootstrap';
@@ -21,6 +21,63 @@ function SummaryCosts(props){
     if (selectedCustomer.phone) parts.push(selectedCustomer.phone);
     return parts.join(' ');
   })() : '';
+
+  // helper to render price considering per-item discount (p.discount in percent)
+  const renderPrice = (item) => {
+    const raw = parseFloat(item.price);
+    const price = Number.isFinite(raw) ? raw : 0;
+    const disc = item && (item.discount !== undefined && item.discount !== null) ? parseFloat(item.discount) || 0 : 0;
+    if (disc > 0) {
+      const discounted = price * (1 - disc / 100);
+      // show discounted price and the percent in parenthesis, e.g. "90€ (-10%)"
+      return (
+        <div style={{ fontWeight: '700', color: '#39300D' }}>
+          {discounted.toFixed(2)}€ <span style={{ fontWeight: '600', fontSize: '0.9em', color: '#39300D' }}>{`(-${disc}% )`}</span>
+        </div>
+      );
+    }
+    return (
+      <div style={{ fontWeight: '700', color: '#39300D' }}>{price.toFixed(2)}€</div>
+    );
+  };
+
+  // global cart discount (percentage 0-100)
+  const [cartDiscount, setCartDiscount] = useState(0);
+
+  const handleCartDiscountChange = (val) => {
+    let n = parseFloat(val);
+    if (Number.isNaN(n)) n = 0;
+    if (n < 0) n = 0;
+    if (n > 100) n = 100;
+    // store as integer or float as user types
+    setCartDiscount(n);
+  };
+
+  // compute subtotal: sum of (price after per-item discount) * quantity
+  const subtotal = useMemo(() => {
+    if (!Array.isArray(summaryProd) || summaryProd.length === 0) return 0;
+    return summaryProd.reduce((acc, item) => {
+      const raw = parseFloat(item.price);
+      const price = Number.isFinite(raw) ? raw : 0;
+      const disc = item && (item.discount !== undefined && item.discount !== null) ? parseFloat(item.discount) || 0 : 0;
+      const unit = price * (1 - disc / 100);
+      //const qty = Number(item.quantity) || 1;
+      //console.log("accumulate:", acc, "Item:", item, "price:", price, "discount:", disc, "Unit price after discount:", unit, "Qty:", qty);
+      return acc + unit;
+    }, 0);
+  }, [summaryProd]);
+
+  // pure helper to compute final total given subtotal and a percentage discount (0-100)
+  const computeFinalTotal = (sub, discPercent) => {
+    const s = Number.isFinite(sub) ? sub : 0;
+    let d = parseFloat(discPercent);
+    if (Number.isNaN(d)) d = 0;
+    if (d < 0) d = 0;
+    if (d > 100) d = 100;
+    return s * (1 - d / 100);
+  };
+
+  const finalTotal = useMemo(() => computeFinalTotal(subtotal, cartDiscount), [subtotal, cartDiscount]);
 
   return(
     <div style={{ borderRight: "4px solid black", padding: "1rem" }}>
@@ -45,7 +102,7 @@ function SummaryCosts(props){
             </div>
           )}
 
-      {/* Products in cart - styled like selected customer */}
+      {/* Products in cart */}
       <div style={{
         background: '#39300D',
         color: '#D6AD42',
@@ -63,7 +120,7 @@ function SummaryCosts(props){
               <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 4px', borderBottom: '1px dashed rgba(0,0,0,0.05)' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: '700', color: '#39300D' }}>{p.title}</div>
-                  <div style={{ fontWeight: '700', color: '#39300D' }}>{p.price ? p.price + '€' : '0.0€'}</div>
+                  {renderPrice(p)}
                   <div style={{ fontSize: '0.85em', color: '#39300D' }}>Qty: {p.quantity}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -87,6 +144,23 @@ function SummaryCosts(props){
             ))
           )}
         </div>
+
+        {/* Global cart discount */}
+        <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: '30%', fontSize: '0.85em', color: '#D6AD42', fontWeight: '600' }}>Sconto:</div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+            <Form.Control
+              type="number"
+              min={0}
+              max={100}
+              step={1}
+              value={cartDiscount}
+              onChange={(e) => handleCartDiscountChange(e.target.value)}
+              style={{ fontSize: '0.9em', maxWidth: '120px' }}
+            />
+            <div style={{ marginLeft: '8px', color: '#39300D', fontWeight: '600' }}>%</div>
+          </div>
+        </div>
       </div>
 
       {/* payment section */}
@@ -99,16 +173,16 @@ function SummaryCosts(props){
           border: '3px solid #D6AD42'
       }}>
           <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
-              Subtotale: <span style={{ float: 'right' }}>0.0$</span>
+              Subtotale: <span style={{ float: 'right' }}>{subtotal.toFixed(2)}€</span>
           </div>
           <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
-              Sconto: <span style={{ float: 'right' }}>0.0$</span>
+              Sconto ({cartDiscount.toFixed(2)}%): <span style={{ float: 'right' }}>-{((subtotal / 100) * cartDiscount).toFixed(2)}€</span>
           </div>
           <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
-              Spese di Spedizione: <span style={{ float: 'right' }}>0.0$</span>
+              Spese di Spedizione: <span style={{ float: 'right' }}>0.0€</span>
           </div>
           <div style={{ marginBottom: '15px', fontWeight: 'bold' }}>
-              Imposta stimata: <span style={{ float: 'right' }}>0.0$</span>
+              Imposta stimata (IT IVA 22% - Inclusa): <span style={{ float: 'right' }}>{(finalTotal * 0.22).toFixed(2)}€</span>
           </div>
           <hr style={{ border: '1px solid #D6AD42', margin: '15px 0' }} />
           <div style={{ 
@@ -120,7 +194,7 @@ function SummaryCosts(props){
               background: '#D6AD42',
               borderRadius: '5px'
           }}>
-              Totale: 0.0$
+              Totale: {finalTotal.toFixed(2)}€
           </div>
       </div>
     </div>

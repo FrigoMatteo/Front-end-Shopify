@@ -254,7 +254,7 @@ function RequestCustomer(props){
           </Form.Group>
 
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Spam:</Form.Label>
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Newsletter:</Form.Label>
             <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
               <Form.Check
                 type="checkbox"
@@ -290,14 +290,23 @@ function RequestCustomer(props){
 
           <Form.Group className="mb-2 d-flex align-items-center">
             <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Paese:</Form.Label>
-            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
-              type="text"
+            <Form.Select style={{fontSize: "0.8vw", flex: "1"}}
               value={newCustomerCountry}
               onChange={(e) => setNewCustomerCountry(e.target.value)}
-              placeholder="IT"
+              defaultValue={"IT"}
               required
             >
-            </Form.Control>
+              <option value="">Seleziona paese</option>
+              <option value="IT">Italia (IT)</option>
+              <option value="GB">United Kingdom (GB)</option>
+              <option value="DE">Deutschland (DE)</option>
+              <option value="FR">France (FR)</option>
+              <option value="ES">España (ES)</option>
+              <option value="NL">Netherlands (NL)</option>
+              <option value="BE">Belgium (BE)</option>
+              <option value="PT">Portugal (PT)</option>
+              <option value="SE">Sweden (SE)</option>
+            </Form.Select>
           </Form.Group>
           
           <Form.Group className="mb-2 d-flex align-items-center">
