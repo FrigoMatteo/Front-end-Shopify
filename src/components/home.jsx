@@ -22,7 +22,7 @@ function ShowFirm(props){
 
   return (
     <div className="firm-section">
-      <Image src="/hustle_name.png" fluid style={{ maxHeight: "10vh", width: "auto" }} />
+      <Image src="/hustle_name.png" fluid style={{ height: "8vh", width: "auto" }} />
       <div className="welcome-text"
         style={{
           display: "flex",
@@ -30,16 +30,17 @@ function ShowFirm(props){
           justifyContent: "space-between", // testo a sinistra, bottone a destra
           alignItems: "center",
           padding: "0.5rem 1rem",
+          height:"10vh"
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize:"2.5vh"}}>
           <i className="bi bi-person"></i>
           <span>Hi {props.user}</span>
         </div>
 
         <Button onClick={()=>logout()}
           style={{
-            width: "50%",
+            width: "45%",
             fontWeight: "bold",
             color: "#39300D",
             textAlign: "center",
@@ -47,7 +48,7 @@ function ShowFirm(props){
             borderRadius: "5px",
             marginTop:"5px",
             borderColor: "#D6AD42",
-            fontSize: "0.8vw",
+            fontSize: "1.5vh",
           }}
         >
           Logout
@@ -81,7 +82,7 @@ function ShowHistory(props) {
   return (
     <>
 
-    <div className="history-container" style={{ height: "64.5vh" }}>
+    <div className="history-container" style={{ height: "70vh" }}>
       <div className="single-order" style={{ height:'13.5vh',display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <i className="bi bi-bag-plus-fill" style={{ fontSize: '1.5rem'}}> Create Order</i>
       </div>
