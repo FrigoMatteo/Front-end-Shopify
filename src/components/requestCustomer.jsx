@@ -18,7 +18,7 @@ function RequestCustomer(props){
   const [newCustomerSurname, setNewCustomerSurname] = useState("");
   const [newCustomerEmail, setNewCustomerEmail] = useState("");
   const [newCustomerSpam, setNewCustomerSpam] = useState(false);
-  const [newCustomerCountry, setNewCustomerCountry] = useState("");
+  const [newCustomerCountry, setNewCustomerCountry] = useState("IT");
   const [newCustomerCompany, setNewCustomerCompany] = useState("");
   const [newCustomerAddress, setNewCustomerAddress] = useState("");
   const [newCustomerCity, setNewCustomerCity] = useState("");
@@ -42,7 +42,6 @@ function RequestCustomer(props){
   }, [props.customerList]);
 
   const handleSearch = () => {
-    console.log("Search customer",searchCustomer)
     let risultati = [];
     if (searchCustomer === "") {
       risultati = props.customerList;
@@ -66,7 +65,9 @@ function RequestCustomer(props){
       const found = customers.find(c => c.id === id) || (props.customerList || []).find(c => c.id === id);
       if (found) {
         // normalize to include all useful fields so SummaryCosts can show full info
-        const fullPhone = found.defaultAddress.phone;
+        const fullPhone = found.defaultAddress?.phone || "";
+
+        console.log(found)
 
         const normalized = {
           id: found.id,
@@ -81,7 +82,8 @@ function RequestCustomer(props){
           countryCode: found.countryCode || found.country || (found.defaultAddress && found.defaultAddress.provinceCode) || "",
           countryName: found.defaultAddress.country || "",
           phone: fullPhone,
-          fiscalCode: found.defaultAddress.address2 || "",
+          fiscalCode: found.defaultAddress?.address2 || "",
+          countryCodeV2:found.defaultAddress?.countryCodeV2 || "",
           spam: typeof found.spam === 'boolean' ? found.spam : !!found.acceptsMarketing || false
         };
         console.log(normalized)
@@ -104,7 +106,7 @@ function RequestCustomer(props){
     }
 
     const fullPhone = `${newCustomerPhonePrefix}${newCustomerPhone}`;
-    console.log()
+
     const newCustomer = {
       name: newCustomerName,
       surname: newCustomerSurname,
@@ -150,6 +152,7 @@ function RequestCustomer(props){
             countryName: found.defaultAddress.country || "",
             phone: fullPhone,
             fiscalCode: found.defaultAddress.address2 || "",
+            countryCodeV2:found.defaultAddress?.countryCodeV2 || "",
             spam: typeof found.spam === 'boolean' ? found.spam : !!found.acceptsMarketing || false
           };
 
@@ -179,7 +182,7 @@ function RequestCustomer(props){
     setNewCustomerProvince("");
     setNewCustomerPhonePrefix("");
     setNewCustomerSpam(false);
-    setNewCustomerCountry("");
+    setNewCustomerCountry("IT");
     setNewCustomerSurname("");
   };
 
@@ -293,7 +296,6 @@ function RequestCustomer(props){
             <Form.Select style={{fontSize: "0.8vw", flex: "1"}}
               value={newCustomerCountry}
               onChange={(e) => setNewCustomerCountry(e.target.value)}
-              defaultValue={"IT"}
               required
             >
               <option value="">Seleziona paese</option>

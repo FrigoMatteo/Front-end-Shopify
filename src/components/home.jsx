@@ -114,7 +114,6 @@ function HomeComponent(props){
       setDraftSelected({})
     }else{
       const draft=orders.find(item => item.node.id==id)
-      console.log("Clicked draft:",draft)
       setDraftSelected(draft.node)
     }
 

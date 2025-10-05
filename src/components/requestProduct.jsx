@@ -52,6 +52,8 @@ function RequestProduct(props){
   const [namePersonalized, setNamePersonalized] = useState("");
   const [pricePersonalized, setPricePersonalized] = useState("");
   const [discountPersonalized, setDiscountPersonalized] = useState(0);
+  const [discountType, setDiscountType] = useState("FIXED_AMOUNT");
+  const [discountTypePers, setDiscountTypePers] = useState("FIXED_AMOUNT");
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -92,9 +94,18 @@ function RequestProduct(props){
   const handleSubmitProd = (e) => {
     e.preventDefault();
 
+    const discountType = e.target.elements.discountType.value
     const product = props.productList.find(p => p.id === selectProd);
     
     //if (valueProd<=product.variants.nodes[0].inventoryQuantity ){
+    const price= product.variants.nodes[0].price 
+          ? (parseFloat(product.variants.nodes[0].price) * valueProd).toFixed(2).toString() 
+          : "Undefined"
+    if (discountType=="FIXED_AMOUNT" && price-discountProd <0){
+      setErrorMessage("Sconto super il prezzo del prodotto")
+      return;
+    }
+
     props.addProduct(
       {
         id:product.variants.nodes[0].id ? product.variants.nodes[0].id : "Undefined",
@@ -103,6 +114,7 @@ function RequestProduct(props){
           ? (parseFloat(product.variants.nodes[0].price) * valueProd).toFixed(2).toString() 
           : "Undefined",
         quantity:valueProd,
+        discountType:discountType,
         discount: discountProd
       })
     
@@ -118,6 +130,7 @@ function RequestProduct(props){
 
   const handleSubmitPersonalized = (e) => {
     e.preventDefault();
+    const discountType = e.target.elements.discountType.value
 
     props.addProduct(
       {
@@ -127,6 +140,7 @@ function RequestProduct(props){
           ? (pricePersonalized * valuePersonalized).toFixed(2).toString() 
           : "Undefined",
         quantity:valuePersonalized,
+        discountType:discountType,
         discount: discountPersonalized
       })
     
@@ -168,7 +182,7 @@ function RequestProduct(props){
 
         </div>
         <div className="d-flex align-items-center">
-              <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'40%'}}>Quantità:</Form.Label>
+              <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Quantità:</Form.Label>
               <Form.Control
                 type="number"
                 value={valueProd}
@@ -176,21 +190,30 @@ function RequestProduct(props){
                 min={1}
                 max={100}
                 step={1}
-                style={{ width: "8vw", height:'4vh', textAlign: "center" }}
+                style={{ width: "8vw", height:'4vh', textAlign: "center"}}
               />
-            </div>
-            <div className="d-flex align-items-center" style={{marginTop:'8px'}}>
-              <Form.Label className="me-2 mb-0" style={{fontSize: "0.8vw", width:'40%'}}>Sconto(%):</Form.Label>
+        </div>
+        <div className="d-flex align-items-center" style={{marginTop:'8px'}}>
+              <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Sconto(%/€):</Form.Label>
+              <Form.Select style={{fontSize: "0.8vw", width:"6vw",height:'5vh', marginRight:"1vw"}}
+                required
+                name="discountType"
+                value={discountType}
+                onChange={(e) => setDiscountType(e.target.value)}
+              >
+                <option value="FIXED_AMOUNT">Importo</option>
+                <option value="PERCENTAGE">Percentuale</option>
+              </Form.Select>
               <Form.Control
                 type="number"
                 value={discountProd}
                 onChange={(e)=>{setDiscountProd(parseInt(e.target.value) || 0)}}
                 min={0}
-                max={100}
+                max={discountType === "PERCENTAGE" ? 100 : undefined}
                 step={1}
-                style={{ width: "8vw", height:'4vh',textAlign: "center" }}
+                style={{ width: "6vw", height:'5vh',textAlign: "center" }}
               />
-            </div>
+        </div>
         <div className="d-flex justify-content-center" style={{marginTop:'10px'}}>
           <Button type="submit"  style={{ 
                   width:'50%',
@@ -236,15 +259,24 @@ function RequestProduct(props){
           </Form.Group>
 
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Sconto(%):</Form.Label>
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Sconto(%/€):</Form.Label>
+            <Form.Select style={{fontSize: "0.8vw", width:"6vw",height:'5vh', marginRight:"1vw"}}
+              required
+              name="discountType"
+              value={discountTypePers}
+              onChange={(e) => setDiscountTypePers(e.target.value)}
+              >
+              <option value="FIXED_AMOUNT">Importo</option>
+              <option value="PERCENTAGE">Percentuale</option>
+            </Form.Select>
             <Form.Control
               type="number"
               value={discountPersonalized}
               onChange={(e)=>{setDiscountPersonalized(parseInt(e.target.value) || 0)}}
               min={0}
-              max={100}
+              max={discountType === "PERCENTAGE" ? 100 : undefined}
               step={1}
-              style={{ width: "6vw", height:'4vh',textAlign: "center" }}
+              style={{ width: "6vw", height:'5vh',textAlign: "center" }}
             />
           </Form.Group>
 
@@ -257,7 +289,7 @@ function RequestProduct(props){
               min={1}
               max={100}
               step={1}
-              style={{ width: "6vw", height:'4vh',textAlign: "center" }}
+              style={{ width: "8vw", height:'4vh',textAlign: "center" }}
             />
           </Form.Group>
 

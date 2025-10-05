@@ -1,8 +1,8 @@
 import { useState,useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { Alert,Navbar , Container, Image, Button, Badge,InputGroup,Form, Col,Row} from 'react-bootstrap';
-import { getProducts , getClients} from '../api/posts';
+import { Alert,Navbar , Container, Image, Button,Spinner, Badge,InputGroup,Form, Col,Row} from 'react-bootstrap';
+import { getProducts , getClients,postDraftOrder} from '../api/posts';
 import {RequestProduct} from './requestProduct';
 import {RequestCustomer} from './requestCustomer';
 import {SummaryCosts} from './summaryCosts';
@@ -50,10 +50,6 @@ function ShowFormOrder(props){
     updateClients()
     
   }, []);
-  
-  useEffect(() => {
-    console.log("Prodotti nel carrello:", summaryProd);
-  }, [summaryProd]);
 
   // payment link state
   const [paymentLink, setPaymentLink] = useState("");
@@ -68,13 +64,95 @@ function ShowFormOrder(props){
     setSendingOrder(true);
     setCopyStatus("");
 
+    let customerCreate=null
+    if (selectedCustomer?.id){
+      customerCreate={
+        customerId:selectedCustomer.id,
+        name:selectedCustomer?.name || "",
+        address:selectedCustomer?.address || "",
+        city:selectedCustomer?.city || "",
+        company:selectedCustomer?.company || "",
+        fiscalCode:selectedCustomer?.fiscalCode || "",
+        province:selectedCustomer?.province || "",  
+        postalCode:selectedCustomer?.postalCode || "",
+        phone:selectedCustomer?.phone || "",
+        country:selectedCustomer?.countryCodeV2 || "",
+      }
+    }
+
+    console.log(summaryProd)
+    const productsOwn = summaryProd
+      .filter(p => p?.id != null && p?.quantity != null && p?.quantity != 0 && p?.id != "Personalized")
+      .map(p => ({
+        variantId: p.id || null,
+        quantity: p.quantity ?? null,
+        appliedDiscount: p.discount!=0
+          ? {
+              title:
+                p.discountType === "PERCENTAGE"
+                  ? `Promo -${p.discount}%`
+                  : `Sconto ${p.discount}€`,
+              value: p.discount ?? null,
+              valueType: p.discountType || null
+            }
+          : null
+    }));
+
+    const productsPers = summaryProd
+      .filter(p => {
+        // Controlli di validità base
+        if (p?.id == null || p?.quantity == null || p?.quantity === 0 || p?.price == null || p.id!="Personalized") {
+          return false;
+        }
+
+        // Calcolo del prezzo unitario e verifica se è un numero finito
+        const unitPrice = parseFloat(p.price) / parseFloat(p.quantity);
+        return isFinite(unitPrice);
+      })
+      .map(p => {
+
+        const originalUnitPrice=parseFloat(p.price) / parseFloat(p.quantity);
+        return {
+        title: p.title || null,
+        quantity: p.quantity ?? null,
+        originalUnitPrice: originalUnitPrice,
+        appliedDiscount: p.discount!=0
+          ? {
+              title:
+                p.discountType === "PERCENTAGE"
+                  ? `Promo -${p.discount}%`
+                  : `Sconto ${p.discount}€`,
+              value: p.discount ?? null,
+              valueType: p.discountType || null
+            }
+          : null
+    }});
+
+
+    if (productsPers.length === 0 && productsOwn.length === 0) {
+      setErrorMessage('Errore durante la creazione dell\'ordine. Contatta l\'amministratore');
+      return;
+    }
+
+    const combinedProds = [...productsOwn, ...productsPers];
+
+    const draftOrder={
+      customer:customerCreate,
+      products:combinedProds,
+      globalDiscount:{
+
+      }
+
+    }
+    console.log(draftOrder)
     try {
-      // Since no order-create API is defined here, simulate a server response with a payment link.
-      // Replace this block with a real API call when available.
-      await new Promise(res => setTimeout(res, 700));
-      const fakeToken = Math.random().toString(36).slice(2, 10);
-      const link = `https://payment.example.com/pay/${Date.now()}-${fakeToken}`;
-      setPaymentLink(link);
+      
+      const res=await postDraftOrder(draftOrder)
+      if (res?.error){
+        setErrorMessage(res.error)
+      }else{
+        setPaymentLink(link);
+      }
     } catch (err) {
       setErrorMessage('Errore durante l\'invio dell\'ordine');
     } finally {
@@ -125,7 +203,7 @@ function ShowFormOrder(props){
             <RequestProduct addProduct={addProduct} productList={productList}/>
           </div>
         }
-          <SummaryCosts selectDraft={props.selectDraft} summaryProd={summaryProd} selectedCustomer={selectedCustomer} removeProduct={removeProduct} />
+          <SummaryCosts draftSelected={props.draftSelected} selectDraft={props.selectDraft} setSummaryProd={setSummaryProd} summaryProd={summaryProd} setSelectedCustomer={setSelectedCustomer} selectedCustomer={selectedCustomer} removeProduct={removeProduct} />
         {/* Expose Request customer if we have clicked in "Create draft" */}
         {
           !props.selectDraft && <div style={{ borderLeft: "4px solid black", padding: "1rem" }}>
@@ -137,7 +215,11 @@ function ShowFormOrder(props){
       <div style={{ marginTop: '12px', width: '100%', display: 'flex', gap: '12px', alignItems: 'center' }}>
         <div style={{ flex: '0 0 auto' }}>
           <Button onClick={sendOrder} disabled={sendingOrder} style={{ background: '#D6AD42', color: '#39300D', borderColor: '#D6AD42', fontWeight: 'bold' }}>
-            {sendingOrder ? 'Invio...' : 'Invia ordine'}
+            {sendingOrder ? 
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+             : 'Invia ordine'}
           </Button>
         </div>
 
