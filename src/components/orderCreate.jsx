@@ -105,7 +105,7 @@ function ShowFormOrder(props){
 
   const containerStyle = {
     display: "grid", 
-    gridTemplateColumns: "30% 40% 30%", 
+    gridTemplateColumns: props.selectDraft!=0 ? "100%" : "30% 40% 30%", 
     width: '100%',
     height: '83.0vh',
     backgroundColor: '#FEF4B1',
@@ -119,13 +119,19 @@ function ShowFormOrder(props){
     <>
       {errorMessage ? <Alert variant='danger' dismissible onClick={()=>setErrorMessage('')}>{errorMessage}</Alert> : ''}
       <div style={containerStyle} className='order-create'>
-        <div style={{ borderRight: "4px solid black", padding: "1rem" }}>
-          <RequestProduct addProduct={addProduct} productList={productList}/>
-        </div>
-          <SummaryCosts summaryProd={summaryProd} selectedCustomer={selectedCustomer} removeProduct={removeProduct} />
-        <div style={{ padding: "1rem" }}>
-          <RequestCustomer updateClients={updateClients} setSelectedCustomer={setSelectedCustomer} customerList={customerList} setCustomerList={setCustomerList}/>
-        </div>
+        {/* Expose Request product if we have clicked in "Create draft" */}
+        {
+          !props.selectDraft && <div style={{ borderRight: "4px solid black", padding: "1rem" }}>
+            <RequestProduct addProduct={addProduct} productList={productList}/>
+          </div>
+        }
+          <SummaryCosts selectDraft={props.selectDraft} summaryProd={summaryProd} selectedCustomer={selectedCustomer} removeProduct={removeProduct} />
+        {/* Expose Request customer if we have clicked in "Create draft" */}
+        {
+          !props.selectDraft && <div style={{ borderLeft: "4px solid black", padding: "1rem" }}>
+            <RequestCustomer updateClients={updateClients} setSelectedCustomer={setSelectedCustomer} customerList={customerList} setCustomerList={setCustomerList}/>
+          </div>
+        }
       </div>
       {/* Full-width row with order send + payment link */}
       <div style={{ marginTop: '12px', width: '100%', display: 'flex', gap: '12px', alignItems: 'center' }}>

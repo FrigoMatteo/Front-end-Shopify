@@ -80,7 +80,11 @@ function SummaryCosts(props){
   const finalTotal = useMemo(() => computeFinalTotal(subtotal, cartDiscount), [subtotal, cartDiscount]);
 
   return(
-    <div style={{ borderRight: "4px solid black", padding: "1rem" }}>
+    <div style={{ 
+      padding: "1rem",
+      width: props.selectDraft==0 ? "100%" : "50%",         
+      margin: "0 auto",
+      }}>
       {/* Selected Customer summary */}
       {selectedCustomer && (
             <div style={{

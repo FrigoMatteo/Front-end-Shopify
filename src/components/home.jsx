@@ -103,13 +103,20 @@ function HomeComponent(props){
   const [orders,setOrders]=useState([])
   const [errorMessage, setErrorMessage] = useState('');
   const [selectDraft, setSelectDraft] = useState(0);
+  const [draftSelected,setDraftSelected]=useState({})
   const navigate=useNavigate()
 
 
   const handleSelect=(id)=>{
 
-    console.log(id)
     setSelectDraft(id)
+    if (id==0){
+      setDraftSelected({})
+    }else{
+      const draft=orders.find(item => item.node.id==id)
+      console.log("Clicked draft:",draft)
+      setDraftSelected(draft.node)
+    }
 
   }
 
@@ -166,7 +173,7 @@ function HomeComponent(props){
 
           <Col xs={12} md={10}>
             <div className="form-section">
-              <ShowFormOrder/>
+              <ShowFormOrder selectDraft={selectDraft} draftSelected={draftSelected}/>
             </div>
           </Col>
         </Row>
