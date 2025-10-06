@@ -295,12 +295,19 @@ function ShowFormOrder(props){
       {/* Full-width row with order send + payment link */}
       <div style={{ marginTop: '12px', width: '100%', display: 'flex', gap: '12px', alignItems: 'center' }}>
         <div style={{ flex: '0 0 auto' }}>
-          <Button onClick={sendOrder} disabled={sendingOrder} style={{ background: '#D6AD42', color: '#39300D', borderColor: '#D6AD42', fontWeight: 'bold' }}>
-            {sendingOrder ? 
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-             : 'Invia ordine'}
+          <Button onClick={sendOrder} disabled={sendingOrder} aria-label="Invia ordine" style={{ background: '#D6AD42', color: '#39300D', borderColor: '#D6AD42', fontWeight: 'bold' }}>
+            {sendingOrder ? (
+              <>
+                <Spinner animation="border" role="status" size="sm">
+                  <span className="visually-hidden">Invio in corso...</span>
+                </Spinner>
+              </>
+            ) : (
+              <>
+                <i className="bi bi-send-fill me-2" aria-hidden="true"></i>
+                Invia ordine
+              </>
+            )}
           </Button>
         </div>
 
@@ -309,7 +316,10 @@ function ShowFormOrder(props){
         </div>
 
         <div style={{ flex: '0 0 auto', display: 'flex', gap: '8px' }}>
-          <Button onClick={copyLink} disabled={!paymentLink} style={{ background: '#ffffff', color: '#39300D', borderColor: '#D6AD42' }}>Copia link</Button>
+          <Button onClick={copyLink} disabled={!paymentLink} aria-label="Copia link" style={{ background: '#ffffff', color: '#39300D', borderColor: '#D6AD42' }}>
+            <i className="bi bi-clipboard me-2" aria-hidden="true"></i>
+            Copia link
+          </Button>
           <div style={{ alignSelf: 'center', color: '#39300D' }}>{copyStatus}</div>
         </div>
       </div>

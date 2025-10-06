@@ -83,14 +83,9 @@ function ShowHistory(props) {
     <>
 
     <div className="history-container">
-      <div className={`single-order ${props.selectDraft === 0 ? 'selected' : ''}`} 
-      hover={props.selectDraft} onClick={()=>props.handleSelect(0)} style={{ height:'13.5vh',display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <i className="bi bi-bag-plus-fill" style={{ fontSize: '1.5rem'}}> Create Order</i>
-      </div>
-        {props.orders.map(e => (
-          <ShowSingleOrder selectDraft={props.selectDraft} handleSelect={props.handleSelect} key={e.node.id} order={e.node} />
-        ))}
-      
+      {props.orders.map(e => (
+        <ShowSingleOrder selectDraft={props.selectDraft} handleSelect={props.handleSelect} key={e.node.id} order={e.node} />
+      ))}
     </div>
     </>
   );
@@ -152,6 +147,12 @@ function HomeComponent(props){
           <Col xs={6} md={2}>
             <Row>
               <ShowFirm setPage={props.setPage} setUser={props.setUser} user={props.user} errorMessage={errorMessage} setErrorMessage={setErrorMessage}/>
+            </Row>
+            <Row style={{ marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
+              <Button onClick={() => handleSelect(0)} style={{ width: '100%', height: '60px', fontWeight: 'bold', color: '#39300D', background: '#D6AD42', borderColor: '#D6AD42' }}>
+                <i className="bi bi-bag-plus-fill" style={{ marginRight: '8px' }}></i>
+                Crea Ordine
+              </Button>
             </Row>
             <Row>
               <ShowHistory selectDraft={selectDraft} handleSelect={handleSelect} orders={orders}/>

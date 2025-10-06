@@ -28,11 +28,15 @@ function SummaryCosts(props){
     const price = Number.isFinite(raw) ? raw : 0;
     const disc = item && (item.discount !== undefined && item.discount !== null) ? parseFloat(item.discount) || 0 : 0;
     if (disc > 0) {
-      const discounted = item.discountType=="FIXED_AMOUNT" ? price - disc : price * (1 - disc / 100);
-      // show discounted price and the percent in parenthesis, e.g. "90€ (-10%)"
+      const discounted = item.discountType == "FIXED_AMOUNT" ? Math.max(0, price - disc) : price * (1 - disc / 100);
+      // formatted discount label
+      const discountLabel = item.discountType == "FIXED_AMOUNT" ? `-${Number(disc).toFixed(2)}€` : `-${Number(disc).toFixed(2)}%`;
       return (
-        <div style={{ fontWeight: '700', color: '#39300D' }}>
-          {discounted.toFixed(2)}€ <span style={{ fontWeight: '600', fontSize: '0.9em', color: '#39300D' }}>{item.discountType=="FIXED_AMOUNT" ? `(-${disc}€ )` : `(-${disc}% )`}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#39300D' }}>
+          <div style={{ textDecoration: 'line-through', opacity: 0.7 }}>{price.toFixed(2)}€</div>
+          <div aria-hidden style={{ fontWeight: '700' }}>→</div>
+          <div style={{ fontWeight: '800' }}>{discounted.toFixed(2)}€</div>
+          <div style={{ fontWeight: '600', fontSize: '0.9em', color: '#39300D' }}>({discountLabel})</div>
         </div>
       );
     }
