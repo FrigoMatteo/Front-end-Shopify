@@ -97,6 +97,7 @@ function ShowFormOrder(props){
         discount: node.appliedDiscount?.value || 0,
         discountType:node.appliedDiscount?.valueType || "FIXED_AMOUNT"
       })) || [];
+      setPaymentLink(props.draftSelected.invoiceUrl);
       setSummaryProd(normalizeProds)
       setDiscountType(props.draftSelected.appliedDiscount?.valueType || "FIXED_AMOUNT")
       setCartDiscount(props.draftSelected.appliedDiscount?.value || 0)
