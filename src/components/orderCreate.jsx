@@ -114,6 +114,13 @@ function ShowFormOrder(props){
   const [sendingOrder, setSendingOrder] = useState(false);
   const [copyStatus, setCopyStatus] = useState("");
 
+  // clear payment link when signalled by parent (e.g., selecting Create Order)
+  useEffect(() => {
+    if (props.clearPaymentLinkSignal !== undefined) {
+      setPaymentLink("");
+    }
+  }, [props.clearPaymentLinkSignal]);
+
   const sendOrder = async () => {
     if (!summaryProd || summaryProd.length === 0) {
       setErrorMessage("Impossibile inviare: il carrello è vuoto.");
@@ -321,7 +328,7 @@ function ShowFormOrder(props){
             <i className="bi bi-clipboard me-2" aria-hidden="true"></i>
             Copia link
           </Button>
-          <div style={{ alignSelf: 'center', color: '#39300D' }}>{copyStatus}</div>
+          <div style={{ alignSelf: 'center', color: '#D6AD42' }}>{copyStatus}</div>
         </div>
       </div>
       

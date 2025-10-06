@@ -61,6 +61,7 @@ function ShowFirm(props){
 
 
 function ShowSingleOrder(props){
+  const employer = Array.isArray(props.order?.tags) && props.order.tags.length > 0 ? props.order.tags[0] : null;
 
   return (
     <div className={`single-order ${props.selectDraft === props.order.id ? 'selected' : ''}`} onClick={()=>props.handleSelect(props.order.id)}>
@@ -72,6 +73,12 @@ function ShowSingleOrder(props){
           {props.order.status}
         </div>
         <i className="bi bi-calendar-event"></i>{props.order.createdAt ? dayjs(props.order.createdAt).format('DD/MM/YYYY  HH:mm') : "Non definito"}
+        {employer ? (
+          <div style={{ marginTop: '4px', color: '#666', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <i className="bi bi-card-text"></i>
+            <span style={{ fontSize: '0.9em' }}>{`Creato da - ${employer}`}</span>
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -99,6 +106,7 @@ function HomeComponent(props){
   const [errorMessage, setErrorMessage] = useState('');
   const [selectDraft, setSelectDraft] = useState(0);
   const [draftSelected,setDraftSelected]=useState({})
+  const [clearPaymentLinkSignal, setClearPaymentLinkSignal] = useState(0);
 
   const [needLogin,setNeedLogin]=useState(false)
 
@@ -108,6 +116,8 @@ function HomeComponent(props){
     setSelectDraft(id)
     if (id==0){
       setDraftSelected({})
+      // signal the order form to clear any existing payment link
+      setClearPaymentLinkSignal(s => s + 1);
     }else{
       const draft=orders.find(item => item.node.id==id)
       setDraftSelected(draft.node)
@@ -161,7 +171,7 @@ function HomeComponent(props){
 
           <Col xs={12} md={10}>
             <div className="form-section">
-              <ShowFormOrder selectDraft={selectDraft} draftSelected={draftSelected} setChange={setChange} getSes={props.getSes} setNeedLogin={setNeedLogin}/>
+              <ShowFormOrder selectDraft={selectDraft} draftSelected={draftSelected} setChange={setChange} getSes={props.getSes} setNeedLogin={setNeedLogin} clearPaymentLinkSignal={clearPaymentLinkSignal} />
             </div>
           </Col>
         </Row>
