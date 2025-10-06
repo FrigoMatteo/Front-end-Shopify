@@ -5,19 +5,19 @@ import '../css/home.css';
 import { Navbar , Container, Image, Button, Badge,InputGroup,Form, Col,Row,Alert} from 'react-bootstrap';
 import {ShowFormOrder} from './orderCreate.jsx'
 import { getOrders } from '../api/posts';
-import { useNavigate} from 'react-router';
-import { getSessionAPI,logoutSession } from '../api/posts';
+import { logoutSession } from '../api/posts';
+import {LoginForm} from './LoginForm.jsx';
 import dayjs from 'dayjs';
+import "../css/LoginForm.css"
 
 
 
 function ShowFirm(props){
-  const navigate=useNavigate()
 
   async function logout(){
     await logoutSession()
     props.setUser("undefined")
-    navigate("/")
+    props.setPage('login')
   }
 
   return (
@@ -104,7 +104,8 @@ function HomeComponent(props){
   const [errorMessage, setErrorMessage] = useState('');
   const [selectDraft, setSelectDraft] = useState(0);
   const [draftSelected,setDraftSelected]=useState({})
-  const navigate=useNavigate()
+
+  const [needLogin,setNeedLogin]=useState(false)
 
 
   const handleSelect=(id)=>{
@@ -121,22 +122,6 @@ function HomeComponent(props){
 
   // State used when an action is perfomed (such a pre-order registered)
   const [change,setChange]=useState(true)
-
-  useEffect(()=>{
-    // Used to set any possible account previously logged in
-    
-    const getSes=async ()=>{
-      const user=await getSessionAPI()
-      if (user?.error){
-        props.setUser("undefined")
-        navigate('/')
-      }else{
-        props.setUser(user.username)
-      }
-    }
-
-    getSes()
-  },[])
 
   useEffect(() => {
     if (change){
@@ -159,11 +144,14 @@ function HomeComponent(props){
 
   return (
     <div className="home-container">
+      {needLogin && (
+        <LoginForm setUser={props.setUser} setPage={props.setPage} needLogin={needLogin} setNeedLogin={setNeedLogin}/>
+      )}
       <Container fluid>
         <Row>
           <Col xs={6} md={2}>
             <Row>
-              <ShowFirm setUser={props.setUser} user={props.user} errorMessage={errorMessage} setErrorMessage={setErrorMessage}/>
+              <ShowFirm setPage={props.setPage} setUser={props.setUser} user={props.user} errorMessage={errorMessage} setErrorMessage={setErrorMessage}/>
             </Row>
             <Row>
               <ShowHistory selectDraft={selectDraft} handleSelect={handleSelect} orders={orders}/>
@@ -172,7 +160,7 @@ function HomeComponent(props){
 
           <Col xs={12} md={10}>
             <div className="form-section">
-              <ShowFormOrder selectDraft={selectDraft} draftSelected={draftSelected}/>
+              <ShowFormOrder selectDraft={selectDraft} draftSelected={draftSelected} setChange={setChange} getSes={props.getSes} setNeedLogin={setNeedLogin}/>
             </div>
           </Col>
         </Row>

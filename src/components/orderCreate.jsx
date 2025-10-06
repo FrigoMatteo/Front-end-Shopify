@@ -15,6 +15,10 @@ function ShowFormOrder(props){
   const [customerList,setCustomerList]=useState([])
   const [selectedCustomer, setSelectedCustomer] = useState(null)
 
+  // global cart discount (percentage 0-100)
+  const [cartDiscount, setCartDiscount] = useState(0);
+  const [discountType, setDiscountType] = useState("FIXED_AMOUNT");
+
   const [errorMessage,setErrorMessage]=useState("")
 
   const addProduct = (prod) => {
@@ -51,6 +55,59 @@ function ShowFormOrder(props){
     
   }, []);
 
+
+  /* When we press a history draftOrder  */
+  useEffect(() => {
+    // We clean possible states
+    setCartDiscount(0)
+    setDiscountType("FIXED_AMOUNT")
+
+    if (props.selectDraft!=0){
+
+      let normalizedCustomer={}
+      if (props.draftSelected.customer){
+        const found=props.draftSelected.customer;
+        const fullPhone = found.defaultAddress.phone || "";
+        normalizedCustomer = {
+          id: found.id,
+          name: found.displayName || "",
+          email: (found.email) || (found.defaultEmailAddress && found.defaultEmailAddress.emailAddress) || "",
+          company: found.defaultAddress.company || found.organization || "",
+          address: found.address || (found.defaultAddress && (found.defaultAddress.address1 || found.defaultAddress.formatted)) || "",
+          city: found.city || (found.defaultAddress && found.defaultAddress.city) || "",
+          postalCode: found.postalCode || (found.defaultAddress && found.defaultAddress.zip) || "",
+          province: found.province || (found.defaultAddress && found.defaultAddress.province) || "",
+          countryCode: found.countryCode || found.country || (found.defaultAddress && found.defaultAddress.provinceCode) || "",
+          countryName: found.defaultAddress.country || "",
+          phone: fullPhone,
+          fiscalCode: found.defaultAddress.address2 || "",
+          spam: (found.emailMarketingConsent?.marketingState=="NOT_SUBSCRIBED" ? false : true) || false
+        };
+
+      }else{
+        normalizedCustomer={name:"Nessun cliente associato"}
+      }
+      setSelectedCustomer(normalizedCustomer)
+
+      const normalizeProds=props.draftSelected?.lineItems?.edges?.map(({ node }) => ({
+        id: node.variant?.id || node.id,
+        title: node.title,
+        quantity: node.quantity,
+        price: node.originalUnitPriceSet.shopMoney.amount *node.quantity,
+        discount: node.appliedDiscount?.value || 0,
+        discountType:node.appliedDiscount?.valueType || "FIXED_AMOUNT"
+      })) || [];
+      setSummaryProd(normalizeProds)
+      setDiscountType(props.draftSelected.appliedDiscount?.valueType || "FIXED_AMOUNT")
+      setCartDiscount(props.draftSelected.appliedDiscount?.value || 0)
+    }else{
+      setSummaryProd([])
+      setSelectedCustomer(null)
+    }
+
+  }, [props.selectDraft]);
+
+
   // payment link state
   const [paymentLink, setPaymentLink] = useState("");
   const [sendingOrder, setSendingOrder] = useState(false);
@@ -61,6 +118,14 @@ function ShowFormOrder(props){
       setErrorMessage("Impossibile inviare: il carrello è vuoto.");
       return;
     }
+
+    const session = await props.getSes();
+    if (!session) {
+      console.warn("Sessione non valida, interrompo operazione");
+      props.setNeedLogin(true)
+      return; // blocca l’esecuzione se non c’è sessione valida
+    }
+
     setSendingOrder(true);
     setCopyStatus("");
 
@@ -81,6 +146,7 @@ function ShowFormOrder(props){
     }
 
     console.log(summaryProd)
+    // Raccolta lista solo prodotti già esistenti
     const productsOwn = summaryProd
       .filter(p => p?.id != null && p?.quantity != null && p?.quantity != 0 && p?.id != "Personalized")
       .map(p => ({
@@ -98,6 +164,7 @@ function ShowFormOrder(props){
           : null
     }));
 
+    // Raccolta prodotti solo personalizzati
     const productsPers = summaryProd
       .filter(p => {
         // Controlli di validità base
@@ -133,16 +200,18 @@ function ShowFormOrder(props){
       setErrorMessage('Errore durante la creazione dell\'ordine. Contatta l\'amministratore');
       return;
     }
-
     const combinedProds = [...productsOwn, ...productsPers];
 
     const draftOrder={
       customer:customerCreate,
       products:combinedProds,
       globalDiscount:{
-
+        title: discountType === "PERCENTAGE"
+                ? `Promo sul Totale -${cartDiscount}%`
+                : `Sconto sul Totale ${cartDiscount}€`,
+        value:cartDiscount,
+        valueType:discountType,
       }
-
     }
     console.log(draftOrder)
     try {
@@ -150,8 +219,19 @@ function ShowFormOrder(props){
       const res=await postDraftOrder(draftOrder)
       if (res?.error){
         setErrorMessage(res.error)
+      }else if(res=={}){
+        console.log("Or Entered here")
+        setErrorMessage("Errore creazione ordine. Se persiste contatta l'amministratore")
       }else{
-        setPaymentLink(link);
+        console.log("Entered here")
+        setPaymentLink(res.invoiceUrl);
+        setCartDiscount(0);
+        setDiscountType("FIXED_AMOUNT");
+        setSummaryProd([]);
+        setSelectedCustomer(null);
+
+        // Used to update the draftOrder history. We do a get call.
+        props.setChange(true)
       }
     } catch (err) {
       setErrorMessage('Errore durante l\'invio dell\'ordine');
@@ -203,11 +283,12 @@ function ShowFormOrder(props){
             <RequestProduct addProduct={addProduct} productList={productList}/>
           </div>
         }
-          <SummaryCosts draftSelected={props.draftSelected} selectDraft={props.selectDraft} setSummaryProd={setSummaryProd} summaryProd={summaryProd} setSelectedCustomer={setSelectedCustomer} selectedCustomer={selectedCustomer} removeProduct={removeProduct} />
+          <SummaryCosts cartDiscount={cartDiscount} setCartDiscount={setCartDiscount} discountType={discountType} setDiscountType={setDiscountType}
+          selectDraft={props.selectDraft} summaryProd={summaryProd} selectedCustomer={selectedCustomer} removeProduct={removeProduct} />
         {/* Expose Request customer if we have clicked in "Create draft" */}
         {
           !props.selectDraft && <div style={{ borderLeft: "4px solid black", padding: "1rem" }}>
-            <RequestCustomer updateClients={updateClients} setSelectedCustomer={setSelectedCustomer} customerList={customerList} setCustomerList={setCustomerList}/>
+            <RequestCustomer getSes={props.getSes} setNeedLogin={props.setNeedLogin} updateClients={updateClients} setSelectedCustomer={setSelectedCustomer} customerList={customerList} setCustomerList={setCustomerList}/>
           </div>
         }
       </div>

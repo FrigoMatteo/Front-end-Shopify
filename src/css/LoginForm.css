@@ -1,71 +1,109 @@
 body {
-    font-family: 'Poppins', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    margin: 0;
-    padding: 0;
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
 }
 
-/* Center the wrapper specifically */
+/* === OVERLAY === */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);  /* grigio trasparente */
+  backdrop-filter: blur(5px);       /* effetto “annebbiante” */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* === WRAPPER-OVERLAY === */
+.wrapper-overlay {
+  position: relative;
+  background: #39300D; /* sfondo scuro, come vuoi tu */
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  pointer-events: all;
+  color: #D6AD42; /* COLORE TESTO BASE */
+}
+
+/* --- togliamo il vecchio “color: inherit” che cancellava i colori interni --- */
+.wrapper-overlay * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  /* RIMUOVI: color: inherit; */
+}
+
+/* === WRAPPER NORMALE (quando needLogin = false) === */
 .wrapper {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #39300D;
-    width: 420px;
-    color: #D6AD42;
-    border-radius: 10px;
-    padding: 30px 40px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #39300D;
+  width: 420px;
+  color: #D6AD42;
+  border-radius: 10px;
+  padding: 30px 40px;
 }
 
+/* === FORM ELEMENTS === */
+.wrapper-overlay h1,
 .wrapper h1 {
-    text-align: center;
-    font-size: 36px;
+  text-align: center;
+  font-size: 36px;
+  color: #D6AD42;
 }
 
-.wrapper .input-box {
-    position: relative;
-    width: 100%;
-    height: 50px;
-    margin: 30px 0;
+.input-box {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  margin: 30px 0;
 }
 
 .input-box input {
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    outline: none;
-    border: 2px solid rgba(255,255,255,.4);
-    border-radius: 40px;
-    font-size: 16px;
-    color: #FEF4B1;
-    padding: 20px 45px 20px 20px;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  outline: none;
+  border: 2px solid rgba(255,255,255,.4);
+  border-radius: 40px;
+  font-size: 16px;
+  color: #FEF4B1;
+  padding: 20px 45px 20px 20px;
 }
 
-.input-box input:placeholder {
-    color: #FEF4B1;
+.input-box input::placeholder {
+  color: #FEF4B1;
 }
 
 .input-box .icon {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-    color: #D6AD42;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #D6AD42;
 }
 
+.wrapper-overlay button,
 .wrapper button {
-    width: 100%;
-    height: 45px;
-    background: #D6AD42;
-    border: none;
-    outline: none;
-    border-radius: 40px;
-    box-shadow: 0 0 10px rgba(0,0,0,.1);
-    font-size: 16px;
-    font-weight: 700;
-    color: #39300D;
-    cursor: pointer;
+  width: 100%;
+  height: 45px;
+  background: #D6AD42;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0,0,0,.1);
+  font-size: 16px;
+  font-weight: 700;
+  color: #39300D;
+  cursor: pointer;
 }

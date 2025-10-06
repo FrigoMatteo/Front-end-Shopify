@@ -2,11 +2,9 @@ import React from 'react'
 import "../css/LoginForm.css"
 import { Spinner } from 'react-bootstrap';
 import { useState,useEffect } from 'react'
-import { useNavigate} from 'react-router';
 import { FaUser } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
 import { sendPost } from '../api/posts';
-import { getSessionAPI } from '../api/posts';
 
 
 export const LoginForm = (props) => {
@@ -15,29 +13,9 @@ export const LoginForm = (props) => {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState(false);
   const [error, setError] = useState("");
-  const navigate=useNavigate()
 
   // Regex: only letters, numbers, and . , _ ! ?
   const validPattern = /^[a-zA-Z0-9.,_!?]+$/;
-
-
-
-  useEffect(()=>{
-    // Used to set any possible account previously logged in
-    
-    const getSes=async ()=>{
-      const user=await getSessionAPI()
-      console.log("login user:",user)
-      if (user?.error){
-        props.setUser("undefined")
-      }else{
-        props.setUser(user.username)
-        navigate('/home')
-      }
-    }
-
-    getSes()
-  },[])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,7 +41,12 @@ export const LoginForm = (props) => {
 
       if (res.username) {
         props.setUser(res.username)
-        navigate('/home')
+
+        if (!props.needLogin){
+          props.setPage('home')
+        }else{
+          props.setNeedLogin(false)
+        }
       } else {
         setConfirm(false)
         setPassword("")
@@ -78,28 +61,35 @@ export const LoginForm = (props) => {
   };
 
   return (
-    <div className="wrapper">
-      <form onSubmit={handleSubmit}>
-        <img src="/hustle_name.png" alt="Company Logo" style={{display: 'block', margin: '0 auto 20px auto', maxWidth: '300px', height: 'auto'}} />
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <div className="input-box">
-          <input type="text" placeholder="username" required value={username} onChange={(e) => setUsername(e.target.value)} />
-          <FaUser className="icon" />
-        </div>
-        <div className="input-box">
-          <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-          <FaLock className="icon" />
-        </div>
+    <div className={props.needLogin ? 'overlay ' : ''}>
+      <div className={props.needLogin ? 'wrapper-overlay' : 'wrapper'}>
+        <form onSubmit={handleSubmit}>
+          <img src="/hustle_name.png" alt="Company Logo" style={{display: 'block', margin: '0 auto 20px auto', maxWidth: '300px', height: 'auto'}} />
+          { props.needLogin ?
+            <div style={{ fontSize: '1em', color: '#D6AD42', fontWeight: '600' }}>Sessione scaduta. Esegui il login:</div>
+            :
+            ""
+          }
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <div className="input-box">
+            <input type="text" placeholder="username" required value={username} onChange={(e) => setUsername(e.target.value)} />
+            <FaUser className="icon" />
+          </div>
+          <div className="input-box">
+            <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            <FaLock className="icon" />
+          </div>
 
-        {!confirm ? <button type="submit">Login</button> :
-          <button type="submit" disabled>
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </button>
-          
-        }
-      </form>
+          {!confirm ? <button type="submit">Login</button> :
+            <button type="submit" disabled>
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </button>
+            
+          }
+        </form>
+      </div>
     </div>
   )
 }

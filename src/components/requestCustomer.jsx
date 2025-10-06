@@ -28,6 +28,7 @@ function RequestCustomer(props){
   const [newCustomerPhonePrefix, setNewCustomerPhonePrefix] = useState("");
   const [newCustomerFiscalCode, setNewCustomerFiscalCode] = useState("");
   
+  const [confirm, setConfirm] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleKeyDown = (e) => {
@@ -94,8 +95,15 @@ function RequestCustomer(props){
     }
   }
 
-  const handleAddNewCustomer = (e) => {
+  const handleAddNewCustomer = async (e) => {
     e.preventDefault();
+
+    const session = await props.getSes();
+    if (!session) {
+      console.warn("Sessione non valida, interrompo operazione");
+      props.setNeedLogin(true)
+      return; // blocca l’esecuzione se non c’è sessione valida
+    }
 
     if (!newCustomerName || !newCustomerSurname || !newCustomerEmail ||
        !newCustomerAddress || !newCustomerPhone || !newCustomerFiscalCode ||
@@ -125,7 +133,6 @@ function RequestCustomer(props){
     const addClient = async (newCustomer) => {
       
       const res=await postClient(newCustomer)
-      console.log("Created client:",res)
 
       if (res?.error){
           setErrorMessage(res.error)
@@ -375,6 +382,7 @@ function RequestCustomer(props){
           <hr style={{ border: '1px solid #D6AD42', margin: '15px 0' }} />
 
           <div className="d-flex justify-content-center">
+            {!confirm ? 
             <Button type="submit" style={{
                 width: "60%",
                 fontWeight: "bold",
@@ -384,8 +392,25 @@ function RequestCustomer(props){
                 borderColor: "#D6AD42",
                 fontSize: "0.8vw",
             }}>
-              Aggiungi Cliente
+              Aggiungi cliente
             </Button>
+            :
+            <Button type="submit" disabled style={{
+                width: "60%",
+                fontWeight: "bold",
+                color: "#39300D",
+                background: "#D6AD42",
+                borderRadius: "5px",
+                borderColor: "#D6AD42",
+                fontSize: "0.8vw",
+            }}>
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </Button>
+            
+          }
+            
           </div>
         </Form>
       </div>

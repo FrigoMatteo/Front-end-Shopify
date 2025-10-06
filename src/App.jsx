@@ -5,6 +5,7 @@ import { Routes, Route, Outlet, Link , BrowserRouter, useNavigate} from 'react-r
 import {HomeComponent} from './components/home';
 import {LoginForm} from './components/LoginForm';
 import Card from 'react-bootstrap/Card';
+import { getSessionAPI } from '../src/api/posts';
 
 function WrongPage(props){
 
@@ -16,31 +17,72 @@ function WrongPage(props){
 
 
 
-
-
 function App() {
-  const [user,setUser]=useState("")
+  const [user, setUser] = useState("");
+  const [page, setPage] = useState("wrong"); // "login" | "home" | "wrong"
+  const [needLogin,setNeedLogin]=useState(false)
+
+
+  const getSes = async () => {
+    try {
+      const user = await getSessionAPI();
+
+        if (user?.error) {
+          
+          return null; // indica sessione non valida
+        } else {
+          
+          return user; // indica sessione valida
+        }
+      } catch (error) {
+        console.error("Errore nel recupero della sessione:", error);
+        
+        return "err";
+    }
+  };
+
+  useEffect(()=>{
+    // Used to set any possible account previously logged in
+    const getSession=async()=>{
+      const res=await getSes()
+      if (res==null){
+        setUser(undefined);
+        
+        setPage('login');
+      }else if(res=="err"){
+        console.log("Something went wrong with login")
+      }else{
+        setUser(user.username);
+        
+        setPage('home');
+      }
+    }
+
+    getSession()
+  },[])
+
+  function renderPage() {
+    switch (page) {
+      case "login":
+        return <LoginForm setUser={setUser} setPage={setPage} needLogin={false} setNeedLogin={()=>(console.log("why?"))}/>;
+      case "home":
+        return <HomeComponent user={user} setUser={setUser} getSes={getSes} setPage={setPage} needLogin={needLogin} setNeedLogin={setNeedLogin}/>;
+      default:
+        return <WrongPage/>;
+    }
+  }
 
   return (
-    <>
-    <BrowserRouter>
-      <Routes>
-
-      <Route path="/" element={<Layout/>}>
-        <Route index element={<LoginForm setUser={setUser}/>}/>
-        <Route path="home" element={<HomeComponent setUser={setUser} user={user}/>}/>
-        <Route path="*" element={<WrongPage />} />
-      </Route>
-      
-      </Routes>
-    </BrowserRouter>
-    </>
-  )
+    <Layout>
+      {renderPage()}
+    </Layout>
+  );
 }
 
 
 
-function Layout(props){
+
+function Layout({ children }){
 
   const cardStyle = {
     backgroundImage: 'url("/header_pic.png")',
@@ -57,7 +99,7 @@ function Layout(props){
     <>
     <Card style={cardStyle}>
       <Card.ImgOverlay>
-          <Outlet />
+          {children}
       </Card.ImgOverlay>
     </Card>
     </>

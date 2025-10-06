@@ -42,8 +42,7 @@ function SummaryCosts(props){
   };
 
   // global cart discount (percentage 0-100)
-  const [cartDiscount, setCartDiscount] = useState(0);
-  const [discountType, setDiscountType] = useState("FIXED_AMOUNT");
+  const { cartDiscount, setCartDiscount, discountType, setDiscountType } = props;
 
   const handleCartDiscountChange = (val) => {
     let n = parseFloat(val);
@@ -53,60 +52,6 @@ function SummaryCosts(props){
     // store as integer or float as user types
     setCartDiscount(n);
   };
-
-  const cleanState = ()=>{
-    setCartDiscount(0)
-    setDiscountType("FIXED_AMOUNT")
-  }
-
-  useEffect(() => {
-    cleanState()
-    if (props.selectDraft!=0){
-
-      let normalizedCustomer={}
-      if (props.draftSelected.customer){
-        const found=props.draftSelected.customer;
-        const fullPhone = found.defaultAddress.phone || "";
-        normalizedCustomer = {
-          id: found.id,
-          name: found.displayName || "",
-          email: (found.email) || (found.defaultEmailAddress && found.defaultEmailAddress.emailAddress) || "",
-          company: found.defaultAddress.company || found.organization || "",
-          address: found.address || (found.defaultAddress && (found.defaultAddress.address1 || found.defaultAddress.formatted)) || "",
-          city: found.city || (found.defaultAddress && found.defaultAddress.city) || "",
-          postalCode: found.postalCode || (found.defaultAddress && found.defaultAddress.zip) || "",
-          province: found.province || (found.defaultAddress && found.defaultAddress.province) || "",
-          countryCode: found.countryCode || found.country || (found.defaultAddress && found.defaultAddress.provinceCode) || "",
-          countryName: found.defaultAddress.country || "",
-          phone: fullPhone,
-          fiscalCode: found.defaultAddress.address2 || "",
-          spam: (found.emailMarketingConsent?.marketingState=="NOT_SUBSCRIBED" ? false : true) || false
-        };
-
-      }else{
-        normalizedCustomer={name:"Nessun cliente associato"}
-      }
-      props.setSelectedCustomer(normalizedCustomer)
-
-
-
-      const normalizeProds=props.draftSelected?.lineItems?.edges?.map(({ node }) => ({
-        id: node.variant?.id || node.id,
-        title: node.title,
-        quantity: node.quantity,
-        price: node.originalUnitPriceSet.shopMoney.amount *node.quantity,
-        discount: node.appliedDiscount?.value || 0,
-        discountType:node.appliedDiscount?.valueType || "FIXED_AMOUNT"
-      })) || [];
-      props.setSummaryProd(normalizeProds)
-      setDiscountType(props.draftSelected.appliedDiscount?.valueType || "FIXED_AMOUNT")
-      setCartDiscount(props.draftSelected.appliedDiscount?.value || 0)
-    }else{
-      props.setSummaryProd([])
-      props.setSelectedCustomer(null)
-    }
-
-  }, [props.selectDraft]);
 
 
   // compute subtotal: sum of (price after per-item discount) * quantity
@@ -124,15 +69,15 @@ function SummaryCosts(props){
   }, [summaryProd]);
 
   // pure helper to compute final total given subtotal and a percentage discount (0-100)
-  const computeFinalTotal = (sub, disc) => {
+  const computeFinalTotal = (sub, disc,type) => {
     const s = Number.isFinite(sub) ? sub : 0;
     let d = parseFloat(disc);
     if (Number.isNaN(d)) d = 0;
     if (d < 0) d = 0;
-    return discountType=="FIXED_AMOUNT" ? s - d : s * (1 - d / 100);
+    return type=="FIXED_AMOUNT" ? s - d : s * (1 - d / 100);
   };
 
-  const finalTotal = useMemo(() => computeFinalTotal(subtotal, cartDiscount), [subtotal, cartDiscount]);
+  const finalTotal = useMemo(() => computeFinalTotal(subtotal, cartDiscount,discountType), [subtotal, cartDiscount,discountType]);
 
   return(
     <div style={{ 
@@ -159,7 +104,21 @@ function SummaryCosts(props){
               {selectedCustomer.fiscalCode && <div><strong style={{ color: '#D6AD42' }}>Codice Fiscale:</strong> {selectedCustomer.fiscalCode}</div>}
               <div><strong style={{ color: '#D6AD42' }}>Newsletter:</strong> {selectedCustomer.spam ? 'Sì' : 'No'}</div>
             </div>
-          )}
+          ) ||
+          <div style={{
+              background: '#39300D',
+              color: '#FEF4B1',
+              borderRadius: '8px',
+              padding: '15px',
+              border: '3px solid #D6AD42',
+              marginBottom: '15px'
+            }}>
+              <h5 style={{ color: '#D6AD42', textAlign: 'center', marginBottom: '10px' }}>Nessun cliente Selezionato</h5>
+
+            </div>
+          
+          
+          }
 
       {/* Products in cart */}
       <div style={{
@@ -213,9 +172,9 @@ function SummaryCosts(props){
         {
           props.selectDraft==0 ? 
           <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ width: '30%', fontSize: '0.85em', color: '#D6AD42', fontWeight: '600' }}>Sconto:</div>
+          <div style={{ width: '25%', fontSize: '0.85em', color: '#D6AD42', fontWeight: '600' }}>Sconto:</div>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-            <Form.Select style={{fontSize: "0.8vw", width:"8vw",height:'5vh', marginRight:"1vw"}}
+            <Form.Select style={{fontSize: "0.8vw", width:"8vw",height:'35px', marginRight:"1vw"}}
               required
               value={discountType}
               onChange={(e) => setDiscountType(e.target.value)}
@@ -235,7 +194,7 @@ function SummaryCosts(props){
                 if (val > max) val = max;
                 handleCartDiscountChange(val);
               }}
-              style={{ fontSize: '0.9em', maxWidth: '120px' }}
+              style={{ fontSize: '0.9em', maxWidth: '120px', height:'35px',marginRight:"1vw" }}
             />
             <div style={{ marginLeft: '8px', color: '#39300D', fontWeight: '600' }}>%</div>
           </div>
