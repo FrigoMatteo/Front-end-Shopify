@@ -47,14 +47,11 @@ function App() {
       const res=await getSes()
       if (res==null){
         setUser(undefined);
-        
-        setPage('login');
       }else if(res=="err"){
         console.log("Something went wrong with login")
       }else{
-        setUser(user.username);
-        
         setPage('home');
+        setUser(res.username);
       }
     }
 
