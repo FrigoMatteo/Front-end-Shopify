@@ -132,8 +132,10 @@ function RequestCustomer(props){
 
     const addClient = async (newCustomer) => {
       
+      setConfirm(true)
       const res=await postClient(newCustomer)
 
+      setConfirm(false)
       if (res?.error){
           setErrorMessage(res.error)
       }else{
@@ -164,6 +166,21 @@ function RequestCustomer(props){
           };
 
           props.setSelectedCustomer(normalized);
+          // Reset form
+          setNewCustomerName("");
+          setNewCustomerEmail("");
+          setNewCustomerAddress("");
+          setNewCustomerPhone("");
+          setNewCustomerFiscalCode("");
+          setErrorMessage("");
+          setNewCustomerCompany("");
+          setNewCustomerCity("");
+          setNewCustomerPostalCode("");
+          setNewCustomerProvince("");
+          setNewCustomerPhonePrefix("");
+          setNewCustomerSpam(false);
+          setNewCustomerCountry("IT");
+          setNewCustomerSurname("");
       }
 
     };
@@ -175,22 +192,6 @@ function RequestCustomer(props){
     // E ricarica la ricerca in modo tale da mostrare tutti
     setSearchCustomer("")
     //handleSearch()
-    
-    // Reset form
-    setNewCustomerName("");
-    setNewCustomerEmail("");
-    setNewCustomerAddress("");
-    setNewCustomerPhone("");
-    setNewCustomerFiscalCode("");
-    setErrorMessage("");
-    setNewCustomerCompany("");
-    setNewCustomerCity("");
-    setNewCustomerPostalCode("");
-    setNewCustomerProvince("");
-    setNewCustomerPhonePrefix("");
-    setNewCustomerSpam(false);
-    setNewCustomerCountry("IT");
-    setNewCustomerSurname("");
   };
 
   return(

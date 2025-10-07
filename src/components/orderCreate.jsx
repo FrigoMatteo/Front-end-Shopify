@@ -221,17 +221,15 @@ function ShowFormOrder(props){
         valueType:discountType,
       }
     }
-    console.log(draftOrder)
+    console.log("Created:",draftOrder)
     try {
       
       const res=await postDraftOrder(draftOrder)
       if (res?.error){
         setErrorMessage(res.error)
       }else if(res=={}){
-        console.log("Or Entered here")
         setErrorMessage("Errore creazione ordine. Se persiste contatta l'amministratore")
       }else{
-        console.log("Entered here")
         setPaymentLink(res.invoiceUrl);
         setCartDiscount(0);
         setDiscountType("FIXED_AMOUNT");
