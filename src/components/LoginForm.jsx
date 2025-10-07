@@ -51,7 +51,7 @@ export const LoginForm = (props) => {
         setConfirm(false)
         setPassword("")
         setUsername("")
-        setError("Invalid credentials.");
+        setError(res.error);
       }
     } catch (err) {
       setConfirm(false)
