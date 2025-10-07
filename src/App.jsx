@@ -19,7 +19,7 @@ function WrongPage(props){
 
 function App() {
   const [user, setUser] = useState("");
-  const [page, setPage] = useState("wrong"); // "login" | "home" | "wrong"
+  const [page, setPage] = useState("login"); // "login" | "home" | "wrong"
   const [needLogin,setNeedLogin]=useState(false)
 
 
@@ -47,6 +47,7 @@ function App() {
       const res=await getSes()
       if (res==null){
         setUser(undefined);
+        setPage('login');
       }else if(res=="err"){
         console.log("Something went wrong with login")
       }else{
