@@ -102,10 +102,7 @@ function RequestCustomer(props){
       return; // blocca l’esecuzione se non c’è sessione valida
     }
 
-    if (!newCustomerName || !newCustomerSurname || !newCustomerEmail ||
-       !newCustomerAddress || !newCustomerFiscalCode ||
-         !newCustomerCity || !newCustomerPostalCode ||
-         !newCustomerProvince) {
+    if (!newCustomerName || !newCustomerSurname || !newCustomerEmail || !newCustomerFiscalCode) {
       setErrorMessage("Campi obbligatori.");
       return;
     }
