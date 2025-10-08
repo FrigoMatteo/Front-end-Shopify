@@ -1,7 +1,7 @@
 import { useState,useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { Alert,Navbar , Container, Image, Button, Badge,InputGroup,Form, Col,Row} from 'react-bootstrap';
+import { Alert,Navbar , Container, Image, Button, Badge,InputGroup,Form, Col,Row,Spinner} from 'react-bootstrap';
 import {postClient} from '../api/posts';
 import { GrUpdate } from 'react-icons/gr';
 
@@ -75,7 +75,7 @@ function RequestCustomer(props){
           name: found.name || found.displayName || found.firstName || "",
           surname: found.surname || found.lastName || "",
           email: (found.email) || (found.defaultEmailAddress && found.defaultEmailAddress.emailAddress) || "",
-          company: found.defaultAddress.company || found.organization || "",
+          company: found.defaultAddress?.company || found.organization || "",
           address: found.address || (found.defaultAddress && (found.defaultAddress.address1 || found.defaultAddress.formatted)) || "",
           city: found.city || (found.defaultAddress && found.defaultAddress.city) || "",
           postalCode: found.postalCode || (found.defaultAddress && found.defaultAddress.zip) || "",
@@ -145,7 +145,7 @@ function RequestCustomer(props){
           const found=props.customerList.find(c => c.id === res.id);
 
 
-          const fullPhone = found.defaultAddress.phone;
+          const fullPhone = found.defaultAddress?.phone || "";
 
           const normalized = {
             id: found.id,
@@ -265,7 +265,7 @@ function RequestCustomer(props){
           </Form.Group>
           {/*
 
-          
+
           */}
           <Form.Group className="mb-2 d-flex align-items-center">
             <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Newsletter:</Form.Label>
