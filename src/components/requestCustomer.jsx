@@ -68,8 +68,6 @@ function RequestCustomer(props){
         // normalize to include all useful fields so SummaryCosts can show full info
         const fullPhone = found.defaultAddress?.phone || "";
 
-        console.log(found)
-
         const normalized = {
           id: found.id,
           name: found.name || found.displayName || found.firstName || "",
@@ -87,7 +85,6 @@ function RequestCustomer(props){
           countryCodeV2:found.defaultAddress?.countryCodeV2 || "",
           spam: typeof found.spam === 'boolean' ? found.spam : !!found.acceptsMarketing || false
         };
-        console.log(normalized)
         props.setSelectedCustomer(normalized);
       } else {
         props.setSelectedCustomer(null);
@@ -139,10 +136,15 @@ function RequestCustomer(props){
       if (res?.error){
           setErrorMessage(res.error)
       }else{
-          props.updateClients()
+          await props.updateClients()
 
-          setSelectCustomer(res.id);
           const found=props.customerList.find(c => c.id === res.id);
+
+          if (!found){
+            return
+          }
+          setSelectCustomer(res.id);
+          console.log(found)
 
 
           const fullPhone = found.defaultAddress?.phone || "";
