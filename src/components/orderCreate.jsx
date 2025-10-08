@@ -15,6 +15,8 @@ function ShowFormOrder(props){
   const [customerList,setCustomerList]=useState([])
   const [selectedCustomer, setSelectedCustomer] = useState(null)
 
+  const [selectCustomer, setSelectCustomer] = useState("");
+
   // global cart discount (percentage 0-100)
   const [cartDiscount, setCartDiscount] = useState(0);
   const [discountType, setDiscountType] = useState("FIXED_AMOUNT");
@@ -233,6 +235,7 @@ function ShowFormOrder(props){
         setPaymentLink(res.invoiceUrl);
         setCartDiscount(0);
         setDiscountType("FIXED_AMOUNT");
+        setSelectCustomer("")
         setSummaryProd([]);
         setSelectedCustomer(null);
 
@@ -294,7 +297,8 @@ function ShowFormOrder(props){
         {/* Expose Request customer if we have clicked in "Create draft" */}
         {
           !props.selectDraft && <div style={{ borderLeft: "4px solid black", padding: "1rem" }}>
-            <RequestCustomer getSes={props.getSes} setNeedLogin={props.setNeedLogin} updateClients={updateClients} setSelectedCustomer={setSelectedCustomer} customerList={customerList} setCustomerList={setCustomerList}/>
+            <RequestCustomer selectCustomer={selectCustomer} setSelectCustomer={setSelectCustomer}
+            getSes={props.getSes} setNeedLogin={props.setNeedLogin} updateClients={updateClients} setSelectedCustomer={setSelectedCustomer} customerList={customerList} setCustomerList={setCustomerList}/>
           </div>
         }
       </div>

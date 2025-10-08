@@ -11,7 +11,7 @@ function RequestCustomer(props){
   
   const [customers, setCustomers] = useState([]);
   const [searchCustomer, setSearchCustomer] = useState("");
-  const [selectCustomer, setSelectCustomer] = useState("");
+  const { selectCustomer, setSelectCustomer } = props;
   
   // New customer form states
   const [newCustomerName, setNewCustomerName] = useState("");
