@@ -152,7 +152,7 @@ function RequestCustomer(props){
             name: found.name || found.displayName || found.firstName || "",
             surname: found.surname || found.lastName || "",
             email: (found.email) || (found.defaultEmailAddress && found.defaultEmailAddress.emailAddress) || "",
-            company: found.defaultAddress.company || found.organization || "",
+            company: found.defaultAddress?.company || found.organization || "",
             address: found.address || (found.defaultAddress && (found.defaultAddress.address1 || found.defaultAddress.formatted)) || "",
             city: found.city || (found.defaultAddress && found.defaultAddress.city) || "",
             postalCode: found.postalCode || (found.defaultAddress && found.defaultAddress.zip) || "",
