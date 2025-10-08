@@ -231,7 +231,7 @@ function RequestCustomer(props){
         
         <Form onSubmit={handleAddNewCustomer}>
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Nome:</Form.Label>
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Nome*:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
               type="text"
               placeholder="Nome"
@@ -242,7 +242,7 @@ function RequestCustomer(props){
           </Form.Group>
 
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Cognome:</Form.Label>
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Cognome*:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
               type="text"
               placeholder="Cognome"
@@ -253,7 +253,7 @@ function RequestCustomer(props){
           </Form.Group>
 
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Email:</Form.Label>
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Email*:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
               type="email"
               placeholder="email@example.com"
@@ -279,7 +279,7 @@ function RequestCustomer(props){
           */}
 
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Codice Fiscale:</Form.Label>
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Codice Fiscale*:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}     
               type="text"
               placeholder="RSSMRA80A01H501U"
