@@ -263,10 +263,7 @@ function RequestCustomer(props){
             />
           </Form.Group>
           {/*
-
-
-          */}
-          <Form.Group className="mb-2 d-flex align-items-center">
+            <Form.Group className="mb-2 d-flex align-items-center">
             <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Newsletter:</Form.Label>
             <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
               <Form.Check
@@ -279,6 +276,7 @@ function RequestCustomer(props){
               />
             </div>
           </Form.Group>
+          */}
 
           <Form.Group className="mb-2 d-flex align-items-center">
             <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Codice Fiscale:</Form.Label>

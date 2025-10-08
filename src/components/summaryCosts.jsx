@@ -106,7 +106,8 @@ function SummaryCosts(props){
               {(selectedCustomer.countryName || selectedCustomer.countryCode) && <div><strong style={{ color: '#D6AD42' }}>Paese:</strong> {selectedCustomer.countryName || selectedCustomer.countryCode}</div>}
               {combinedPhone && <div><strong style={{ color: '#D6AD42' }}>Telefono:</strong> {combinedPhone}</div>}
               {selectedCustomer.fiscalCode && <div><strong style={{ color: '#D6AD42' }}>Codice Fiscale:</strong> {selectedCustomer.fiscalCode}</div>}
-              <div><strong style={{ color: '#D6AD42' }}>Newsletter:</strong> {selectedCustomer.spam ? 'Sì' : 'No'}</div>
+              {/* <div><strong style={{ color: '#D6AD42' }}>Newsletter:</strong> {selectedCustomer.spam ? 'Sì' : 'No'}</div>*/}
+              
             </div>
           ) ||
           <div style={{
