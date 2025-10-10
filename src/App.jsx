@@ -4,6 +4,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Routes, Route, Outlet, Link , BrowserRouter, useNavigate} from 'react-router';
 import {HomeComponent} from './components/home';
 import {LoginForm} from './components/LoginForm';
+import {ShowCreateComm} from './components/createCom';
 import Card from 'react-bootstrap/Card';
 import { getSessionAPI } from '../src/api/posts';
 
@@ -65,6 +66,8 @@ function App() {
         return <LoginForm setUser={setUser} setPage={setPage} needLogin={false} setNeedLogin={()=>(console.log("why?"))}/>;
       case "home":
         return <HomeComponent user={user} setUser={setUser} getSes={getSes} setPage={setPage} needLogin={needLogin} setNeedLogin={setNeedLogin}/>;
+      case "createUser":
+        return <ShowCreateComm setPage={setPage}/>;
       default:
         return <WrongPage/>;
     }

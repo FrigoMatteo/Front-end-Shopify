@@ -102,7 +102,10 @@ function RequestCustomer(props){
       return; // blocca l’esecuzione se non c’è sessione valida
     }
 
-    if (!newCustomerName || !newCustomerSurname || !newCustomerEmail || !newCustomerFiscalCode) {
+    if (!newCustomerName || !newCustomerSurname || !newCustomerEmail ||
+       !newCustomerAddress || !newCustomerPhone || !newCustomerFiscalCode ||
+        !newCustomerCity || !newCustomerPostalCode ||
+         !newCustomerProvince || !newCustomerPhonePrefix) {
       setErrorMessage("Campi obbligatori.");
       return;
     }
@@ -135,37 +138,6 @@ function RequestCustomer(props){
       }else{
           await props.updateClients()
 
-          const found=props.customerList.find(c => c.id === res.id);
-
-          if (!found){
-            return
-          }
-          setSelectCustomer(res.id);
-          console.log(found)
-
-
-          const fullPhone = found.defaultAddress?.phone || "";
-
-          const normalized = {
-            id: found.id,
-            name: found.name || found.displayName || found.firstName || "",
-            surname: found.surname || found.lastName || "",
-            email: (found.email) || (found.defaultEmailAddress && found.defaultEmailAddress.emailAddress) || "",
-            company: found.defaultAddress?.company || found.organization || "",
-            address: found.address || (found.defaultAddress && (found.defaultAddress.address1 || found.defaultAddress.formatted)) || "",
-            city: found.city || (found.defaultAddress && found.defaultAddress.city) || "",
-            postalCode: found.postalCode || (found.defaultAddress && found.defaultAddress.zip) || "",
-            province: found.province || (found.defaultAddress && found.defaultAddress.province) || "",
-            countryCode: found.countryCode || found.country || (found.defaultAddress && found.defaultAddress.provinceCode) || "",
-            countryName: found.defaultAddress.country || "",
-            phone: fullPhone,
-            fiscalCode: found.defaultAddress.address2 || "",
-            countryCodeV2:found.defaultAddress?.countryCodeV2 || "",
-            spam: typeof found.spam === 'boolean' ? found.spam : !!found.acceptsMarketing || false
-          };
-
-          props.setSelectedCustomer(normalized);
-          // Reset form
           setNewCustomerName("");
           setNewCustomerEmail("");
           setNewCustomerAddress("");
@@ -180,6 +152,34 @@ function RequestCustomer(props){
           setNewCustomerSpam(false);
           setNewCustomerCountry("IT");
           setNewCustomerSurname("");
+
+
+          setSelectCustomer(res.id);
+
+
+          const fullPhone = res.defaultAddress?.phone || "";
+
+          const normalized = {
+            id: res.id,
+            name: res.name || res.displayName || res.firstName || "",
+            surname: res.surname || res.lastName || "",
+            email: (res.email) || (res.defaultEmailAddress && res.defaultEmailAddress.emailAddress) || "",
+            company: res.defaultAddress?.company || res.organization || "",
+            address: res.address || (res.defaultAddress && (res.defaultAddress.address1 || res.defaultAddress.formatted)) || "",
+            city: res.city || (res.defaultAddress && res.defaultAddress.city) || "",
+            postalCode: res.postalCode || (res.defaultAddress && res.defaultAddress.zip) || "",
+            province: res.province || (res.defaultAddress && res.defaultAddress.province) || "",
+            countryCode: res.countryCode || res.country || (res.defaultAddress && res.defaultAddress.provinceCode) || "",
+            countryName: res.defaultAddress.country || "",
+            phone: fullPhone,
+            fiscalCode: res.defaultAddress.address2 || "",
+            countryCodeV2:res.defaultAddress?.countryCodeV2 || "",
+            spam: typeof res.spam === 'boolean' ? res.spam : !!res.acceptsMarketing || false
+          };
+
+          props.setSelectedCustomer(normalized);
+          // Reset form
+          
       }
 
     };
@@ -231,7 +231,7 @@ function RequestCustomer(props){
         
         <Form onSubmit={handleAddNewCustomer}>
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Nome*:</Form.Label>
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Nome:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
               type="text"
               placeholder="Nome"
@@ -242,7 +242,7 @@ function RequestCustomer(props){
           </Form.Group>
 
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Cognome*:</Form.Label>
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Cognome:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
               type="text"
               placeholder="Cognome"
@@ -253,7 +253,7 @@ function RequestCustomer(props){
           </Form.Group>
 
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Email*:</Form.Label>
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Email:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
               type="email"
               placeholder="email@example.com"
@@ -279,7 +279,7 @@ function RequestCustomer(props){
           */}
 
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Codice Fiscale*:</Form.Label>
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Codice Fiscale:</Form.Label>
             <Form.Control style={{fontSize: "0.8vw", flex: "1"}}     
               type="text"
               placeholder="RSSMRA80A01H501U"
@@ -325,6 +325,7 @@ function RequestCustomer(props){
               type="text"
               placeholder="Via e numero civico"
               value={newCustomerAddress}
+              required
               onChange={(e) => setNewCustomerAddress(e.target.value)}
             />
           </Form.Group>
@@ -335,6 +336,7 @@ function RequestCustomer(props){
               type="text"
               placeholder="Comune"
               value={newCustomerCity}
+              required
               onChange={(e) => setNewCustomerCity(e.target.value)}
             />
           </Form.Group>
@@ -345,6 +347,7 @@ function RequestCustomer(props){
               type="text"
               placeholder="CAP"
               value={newCustomerPostalCode}
+              required
               onChange={(e) => setNewCustomerPostalCode(e.target.value)}
             />
           </Form.Group>
@@ -355,6 +358,7 @@ function RequestCustomer(props){
               type="text"
               placeholder="Provincia"
               value={newCustomerProvince}
+              required
               onChange={(e) => setNewCustomerProvince(e.target.value)}
             />
           </Form.Group>
@@ -365,6 +369,7 @@ function RequestCustomer(props){
               <Form.Control style={{fontSize: "0.8vw", flex: "1", maxWidth: "70px"}}
                 type="text"
                 value={newCustomerPhonePrefix}
+                required
                 onChange={(e) => setNewCustomerPhonePrefix(e.target.value)}
                 placeholder="+39"
               >
@@ -375,6 +380,7 @@ function RequestCustomer(props){
                 type="tel"
                 placeholder="123 456 7890"
                 value={newCustomerPhone}
+                required
                 onChange={(e) => setNewCustomerPhone(e.target.value)}
               />
             </div>

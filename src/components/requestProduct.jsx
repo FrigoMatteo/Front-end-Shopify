@@ -48,12 +48,9 @@ function RequestProduct(props){
   const [valueProd, setValueProd] = useState(1);
   const [discountProd, setDiscountProd] = useState(0);
 
-  const [valuePersonalized, setValuePersonalized] = useState(1);
-  const [namePersonalized, setNamePersonalized] = useState("");
+  const [namePersonalized, setNamePersonalized] = useState("Acconto Gold");
   const [pricePersonalized, setPricePersonalized] = useState("");
-  const [discountPersonalized, setDiscountPersonalized] = useState(0);
   const [discountType, setDiscountType] = useState("FIXED_AMOUNT");
-  const [discountTypePers, setDiscountTypePers] = useState("FIXED_AMOUNT");
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -130,25 +127,21 @@ function RequestProduct(props){
 
   const handleSubmitPersonalized = (e) => {
     e.preventDefault();
-    const discountType = e.target.elements.discountType.value
 
     props.addProduct(
       {
         id:"Personalized",
         title:namePersonalized ? namePersonalized : "Undefined",
         price: pricePersonalized 
-          ? (pricePersonalized * valuePersonalized).toFixed(2).toString() 
+          ? (pricePersonalized * 1).toFixed(2).toString() 
           : "Undefined",
-        quantity:valuePersonalized,
-        discountType:discountType,
-        discount: discountPersonalized
+        quantity:1,
+        discountType:"FIXED_AMOUNT",
+        discount: 0
       })
     
-    setValuePersonalized(1)
     setNamePersonalized("")
     setPricePersonalized("")
-    setDiscountPersonalized(0)
-
   };
 
   return(
@@ -236,19 +229,24 @@ function RequestProduct(props){
       <div className='order-info'>
         <div style={{ color: '#39300D', fontSize: "1.1vw",fontWeight:'bold'}}>Crea Articolo Personalizzato</div>
         <Form onSubmit={handleSubmitPersonalized}>
+
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Articolo:</Form.Label>
-            <Form.Control style={{fontSize: "0.8vw", flex: "1"}}
-              type="text"
-              placeholder="Inserisci il nome dell'articolo"
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Tipo Acconto:</Form.Label>
+            <Form.Select style={{fontSize: "0.8vw", flex: "1"}}
               value={namePersonalized}
-              onChange={(e)=>{setNamePersonalized(e.target.value)}}
+              onChange={(e) => setNamePersonalized(e.target.value)}
               required
-            />
+            >
+              <option value="">Seleziona acconto</option>
+              <option value="Acconto Gold">Acconto Gold</option>
+              <option value="Acconto Platino">Acconto Platino</option>
+              <option value="Acconto Black<">Acconto Black</option>
+              <option value="Acconto Titanio">Acconto Titanio</option>
+            </Form.Select>
           </Form.Group>
 
           <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Prezzo:</Form.Label>
+            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Costo:</Form.Label>
             <InputGroup style={{flex: 1, maxWidth: '220px'}}>
               <InputGroup.Text>€</InputGroup.Text>
               <Form.Control type="number" required
@@ -256,41 +254,6 @@ function RequestProduct(props){
                 onChange={(e) => setPricePersonalized(parseFloat(e.target.value))}
               />
             </InputGroup>
-          </Form.Group>
-
-          <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Sconto(%/€):</Form.Label>
-            <Form.Select style={{fontSize: "0.8vw", width:"6vw",height:'5vh', marginRight:"1vw"}}
-              required
-              name="discountType"
-              value={discountTypePers}
-              onChange={(e) => setDiscountTypePers(e.target.value)}
-              >
-              <option value="FIXED_AMOUNT">Importo</option>
-              <option value="PERCENTAGE">Percentuale</option>
-            </Form.Select>
-            <Form.Control
-              type="number"
-              value={discountPersonalized}
-              onChange={(e)=>{setDiscountPersonalized(parseInt(e.target.value) || 0)}}
-              min={0}
-              max={discountType === "PERCENTAGE" ? 100 : undefined}
-              step={1}
-              style={{ width: "6vw", height:'5vh',textAlign: "center" }}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-2 d-flex align-items-center">
-            <Form.Label style={{fontSize: "0.8vw", width: "30%", marginBottom: "0", marginRight: "10px"}}>Quantità:</Form.Label>
-            <Form.Control
-              type="number"
-              value={valuePersonalized}
-              onChange={(e)=>{setValuePersonalized(parseInt(e.target.value) || 1)}}
-              min={1}
-              max={100}
-              step={1}
-              style={{ width: "8vw", height:'4vh',textAlign: "center" }}
-            />
           </Form.Group>
 
           <div className="d-flex justify-content-center">

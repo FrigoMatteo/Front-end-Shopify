@@ -54,6 +54,27 @@ function ShowFirm(props){
           Logout
         </Button>
       </div>
+      {
+        props.user=="Nicola" || props.user=="MatteoFrigo" ?
+        <Button onClick={()=>{props.setPage('createUser')}}
+          style={{
+            width: "50%",
+            fontWeight: "bold",
+            color: "#39300D",
+            textAlign: "center",
+            background: "#D6AD42",
+            borderRadius: "5px",
+            marginTop:"5px",
+            borderColor: "#D6AD42",
+            fontSize: "1.5vh",
+          }}
+        >
+          Crea Commerciale
+        </Button>
+        :
+        ""
+      }
+      
       {props.errorMessage ? <Alert variant='danger' dismissible onClick={()=>props.setErrorMessage('')}>{props.errorMessage}</Alert> : ''}
     </div>
   );
